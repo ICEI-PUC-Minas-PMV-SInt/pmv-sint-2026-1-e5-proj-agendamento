@@ -107,18 +107,22 @@ Os requisitos não funcionais descrevem características técnicas e de qualidad
 
 ## Restrições
 
-O projeto está restrito pelos itens apresentados na tabela a seguir.
+O desenvolvimento do projeto está sujeito a algumas restrições que limitam o escopo e as decisões técnicas da solução proposta. Essas restrições estão relacionadas principalmente ao contexto acadêmico do projeto, ao tempo disponível para desenvolvimento e ao objetivo de entrega de um **Produto Mínimo Viável (MVP)**.
 
-|ID| Restrição                                             |
-|--|-------------------------------------------------------|
-|01| O projeto deverá ser entregue até o final do semestre |
-|02| Não pode ser desenvolvido um módulo de backend        |
+A Tabela a seguir apresenta as principais restrições identificadas para o projeto.
 
-Enumere as restrições à sua solução. Lembre-se de que as restrições geralmente limitam a solução candidata.
+| ID | Restrição                                                                                                                                                  |
+| -- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 01 | O projeto deverá ser desenvolvido e entregue dentro do período do semestre letivo da disciplina.                                                           |
+| 02 | O sistema será desenvolvido inicialmente como um Produto Mínimo Viável (MVP), contendo apenas as funcionalidades essenciais.                           |
+| 03 | Inicialmente haverá apenas uma usuária principal do sistema, a empreendedora responsável pela clínica.                                                     |
+| 04 | O sistema será desenvolvido utilizando as tecnologias estudadas pela equipe, como React Native e C# com .NET.                                              |
+| 05 | A integração com o WhatsApp será realizada apenas por meio de links de conversa com mensagens pré-preenchidas, não utilizando a API oficial da plataforma. |
+| 06 | A integração com o Google Agenda será implementada de forma simplificada, considerando o escopo do projeto acadêmico.                                      |
+| 07 | O sistema será projetado inicialmente para uma única clínica, podendo ser adaptado futuramente para outros estabelecimentos.                               |
+| 08 | O desenvolvimento será realizado por uma equipe de estudantes, com tempo e recursos limitados.                                                             |
 
-> **Links Úteis**:
-> - [O que são Requisitos Funcionais e Requisitos Não Funcionais?](https://codificar.com.br/requisitos-funcionais-nao-funcionais/)
-> - [O que são requisitos funcionais e requisitos não funcionais?](https://analisederequisitos.com.br/requisitos-funcionais-e-requisitos-nao-funcionais-o-que-sao/)
+
 
 ## Diagrama de Casos de Uso
 
