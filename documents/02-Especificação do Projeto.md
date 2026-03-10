@@ -57,36 +57,53 @@ Colocar a imagem do modelo construído apresentando a proposta de solução.
 
 ## Requisitos
 
-As tabelas que se seguem apresentam os requisitos funcionais e não funcionais que detalham o escopo do projeto. Para determinar a prioridade de requisitos, aplicar uma técnica de priorização de requisitos e detalhar como a técnica foi aplicada.
+As tabelas a seguir apresentam os requisitos funcionais e requisitos não funcionais que definem o escopo da solução proposta. Esses requisitos foram identificados a partir da análise do contexto da empreendedora parceira e das histórias de usuário elaboradas durante a fase de levantamento de requisitos.
+
+Para definir a prioridade de implementação, foi aplicada a técnica MoSCoW, amplamente utilizada em gerenciamento de projetos de software para priorização de requisitos. Essa técnica classifica os requisitos em quatro níveis:
+- Must Have (Alta prioridade) – requisitos essenciais para o funcionamento do sistema.
+- Should Have (Média prioridade) – requisitos importantes, mas que não impedem o funcionamento básico do sistema.
+- Could Have (Baixa prioridade) – funcionalidades desejáveis, porém não essenciais para o MVP.
+- Won’t Have (não incluído no escopo atual) – funcionalidades previstas para versões futuras.
+
+Considerando o escopo de **Produto Mínimo Viável (MVP)** do projeto, foram priorizados principalmente os requisitos classificados como Must Have, garantindo o funcionamento básico do sistema de agendamento e gestão de clientes.
 
 ### Requisitos Funcionais
 
-|ID    | Descrição do Requisito  | Prioridade |
-|------|-----------------------------------------|----|
-|RF-001| Permitir que o usuário cadastre tarefas | ALTA | 
-|RF-002| Emitir um relatório de tarefas no mês   | MÉDIA |
+Os requisitos funcionais descrevem as funcionalidades que o sistema deverá oferecer aos usuários.
+
+| ID     | Descrição do Requisito                                                          | Prioridade |
+| ------ | ------------------------------------------------------------------------------- | ---------- |
+| RF-001 | Permitir que a usuária cadastre novas clientes no sistema                       | ALTA       |
+| RF-002 | Permitir visualizar a lista de clientes cadastradas                             | ALTA       |
+| RF-003 | Permitir editar as informações de uma cliente cadastrada                        | ALTA       |
+| RF-004 | Permitir registrar observações ou anotações sobre a cliente                     | MÉDIA      |
+| RF-005 | Permitir registrar um novo agendamento para uma cliente                         | ALTA       |
+| RF-006 | Permitir visualizar os agendamentos cadastrados na agenda                       | ALTA       |
+| RF-007 | Permitir registrar o histórico de atendimentos realizados                       | ALTA       |
+| RF-008 | Permitir consultar o histórico de atendimentos de uma cliente                   | ALTA       |
+| RF-009 | Permitir cadastrar diferentes tipos de serviços ou procedimentos                | MÉDIA      |
+| RF-010 | Permitir visualizar os dados de contato da cliente                              | ALTA       |
+| RF-011 | Permitir iniciar uma conversa com a cliente via WhatsApp a partir do aplicativo | MÉDIA      |
+| RF-012 | Permitir sincronizar os agendamentos com o Google Agenda                        | MÉDIA      |
+| RF-013 | Permitir registrar a data de aniversário da cliente                             | BAIXA      |
 
 ### Requisitos não Funcionais
 
-|ID     | Descrição do Requisito  |Prioridade |
-|-------|-------------------------|----|
-|RNF-001| O sistema deve ser responsivo para rodar em um dispositivos móvel | MÉDIA | 
-|RNF-002| Deve processar requisições do usuário em no máximo 3s |  BAIXA | 
+Os requisitos não funcionais descrevem características técnicas e de qualidade que o sistema deverá possuir.
 
-Com base nas Histórias de Usuário, enumere os requisitos da sua solução. Classifique esses requisitos em dois grupos:
+| ID      | Descrição do Requisito                                                                              | Prioridade |
+| ------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| RNF-001 | O sistema deve funcionar em dispositivos móveis                                                     | ALTA       |
+| RNF-002 | O sistema deve ser desenvolvido utilizando React Native                                             | ALTA       |
+| RNF-003 | O backend da aplicação deve ser desenvolvido utilizando C# e .NET                                   | ALTA       |
+| RNF-004 | O sistema deve armazenar os dados em banco de dados relacional                                      | ALTA       |
+| RNF-005 | O sistema deve apresentar uma interface simples e intuitiva para facilitar o uso pela empreendedora | ALTA       |
+| RNF-006 | O sistema deve responder às requisições do usuário em tempo adequado para uso cotidiano             | MÉDIA      |
+| RNF-007 | O sistema deve permitir integração com serviços externos, como Google Agenda                        | MÉDIA      |
+| RNF-008 | O sistema deve permitir iniciar comunicação com clientes via WhatsApp                               | MÉDIA      |
+| RNF-009 | O sistema deve possibilitar a inclusão futura de novos tipos de serviços estéticos                  | BAIXA      |
+| RNF-010 | O sistema deve permitir evolução futura para múltiplos usuários                                     | BAIXA      |
 
-- [Requisitos Funcionais
- (RF)](https://pt.wikipedia.org/wiki/Requisito_funcional):
- correspondem a uma funcionalidade que deve estar presente na
-  plataforma (ex: cadastro de usuário).
-- [Requisitos Não Funcionais
-  (RNF)](https://pt.wikipedia.org/wiki/Requisito_n%C3%A3o_funcional):
-  correspondem a uma característica técnica, seja de usabilidade,
-  desempenho, confiabilidade, segurança ou outro (ex: suporte a
-  dispositivos iOS e Android).
-Lembre-se que cada requisito deve corresponder à uma e somente uma
-característica alvo da sua solução. Além disso, certifique-se de que
-todos os aspectos capturados nas Histórias de Usuário foram cobertos.
 
 ## Restrições
 
