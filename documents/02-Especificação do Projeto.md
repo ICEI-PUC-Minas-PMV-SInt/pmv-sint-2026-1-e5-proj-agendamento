@@ -129,25 +129,17 @@ A Tabela a seguir apresenta as principais restrições identificadas para o proj
 
 O diagrama de casos de uso é o próximo passo após a elicitação de requisitos, que utiliza um modelo gráfico e uma tabela com as descrições sucintas dos casos de uso e dos atores. Ele contempla a fronteira do sistema e o detalhamento dos requisitos funcionais com a indicação dos atores, casos de uso e seus relacionamentos. 
 
-As referências abaixo irão auxiliá-lo na geração do artefato “Diagrama de Casos de Uso”.
-
-> **Links Úteis**:
-> - [Criando Casos de Uso](https://www.ibm.com/docs/pt-br/elm/6.0?topic=requirements-creating-use-cases)
-> - [Como Criar Diagrama de Caso de Uso: Tutorial Passo a Passo](https://gitmind.com/pt/fazer-diagrama-de-caso-uso.html/)
-> - [Lucidchart](https://www.lucidchart.com/)
-> - [Astah](https://astah.net/)
-> - [Diagrams](https://app.diagrams.net/)
+![Diagrama de Casos de Uso](img/TPB1Sjem48RlUeeTUaudG0Yaas6ICgJtUjAUjzRMQ29hcPLCqtJoC3tb0Jfz0bwiih65eM0kl_W__RjQwSu7b52LLbdw7Y0mY2bM0RGHoeDXf_oJSMiKB07pm9A5dvO0Vv3dadfcvIb7J_1B0Np4_AaGhfnUi6M1Tm-J-bSxB9ga_NVIV0hWWLt8p0l1SAnUZmkUIMo-Cucl.png)
 
 ## Modelo ER (Projeto Conceitual)
 
 O Modelo ER representa através de um diagrama como as entidades (coisas, objetos) se relacionam entre si na aplicação interativa.
 
-Sugestão de ferramentas para geração deste artefato: LucidChart e Draw.io.
-
-A referência abaixo irá auxiliá-lo na geração do artefato “Modelo ER”.
-
-> - [Como fazer um diagrama entidade relacionamento | Lucidchart](https://www.lucidchart.com/pages/pt/como-fazer-um-diagrama-entidade-relacionamento)
+![Modelo ER](img/ZLB1RjD04BtxArRcXfG3GhsWgge9AOg0Wfg6gpNi3lQewvreTnpHDdmC9pwaFyR4YTLDYQhQacMzztRUcvazJm9H-iuNwOR22Y9qnbD0kLsXuIWjPmG68RarzuKnxy7UD97xuARiEPfN5oVRTyjmT1ZtwCdmA7h1GHPqX-RDs-9tKUmhbSlKF_o9nAM1P9QBPNKr_phKVst8rNtgGKdp.png)
 
 ## Projeto da Base de Dados
 
 O projeto da base de dados corresponde à representação das entidades e relacionamentos identificadas no Modelo ER, no formato de tabelas, com colunas e chaves primárias/estrangeiras necessárias para representar corretamente as restrições de integridade.
+
+![Projeto Base de Dados](img/hLDXQzim4FtkNo7IBmjRInB8br5AFTVPp9fi96xPDtELRxQeh0kIN5Yx_VTTt9Y89eGMce0nxptTtNidNpeFrhUDZjozCckmq0Yj3Fe_QnHaVKq1uU5EetYAXFW2yhwor9eo8KrMdCocc_-68LkYtQBJxiVeZ8nVgKSKuqdqBwWeDJZt3XMZvq8tgvjucVte2duKgYnQru9L93wBR96B.png)
+
