@@ -1,23 +1,24 @@
-# TÍTULO DO PROJETO
+# Agendamento
 
-`CURSO`
+`SISTEMAS PARA INTERNET`
 
-`DISCIPLINA`
+`Projeto: Desenvolvimento de Aplicações Móveis`
 
-`SEMESTRE`
+`SEMESTRE 5`
 
-Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo desenvolvido.
+O projeto consiste no desenvolvimento de um aplicativo mobile para auxiliar no gerenciamento de agendamentos em uma clínica de estética. Atualmente, a empreendedora utiliza o Google Agenda e o WhatsApp para organizar os atendimentos, o que dificulta o registro e a organização das informações das clientes.
+
+A solução proposta busca centralizar essas informações em um único sistema, permitindo o cadastro de clientes, registro de agendamentos e histórico de atendimentos. O sistema será desenvolvido como um Produto Mínimo Viável (MVP), com possibilidade de expansão futura para novos serviços ou clínicas.
 
 ## Integrantes
 
-* Nome completo do aluno 1
-* Nome completo do aluno 2
-* Nome completo do aluno 3
-* Nome completo do aluno 4
+* Alana Alves Maia
+* Rodrigo da Costa Souza
+* Tatiana Haveroth Barbosa
 
 ## Orientador
 
-* Nome completo do professor 1
+* Udo Fritzke Junior
 
 ## Instruções de utilização
 
@@ -26,11 +27,11 @@ Assim que a primeira versão do sistema estiver disponível, deverá complementa
 # Documentação
 
 <ol>
-<li><a href="docs/01-Documentação de Contexto.md"> Documentação de Contexto</a></li>
-<li><a href="docs/02-Especificação do Projeto.md"> Especificação do Projeto</a></li>
-<li><a href="docs/03-Projeto de Interface.md"> Projeto de Interface</a></li>
-<li><a href="docs/04-Testes de Software.md"> Testes de Software</a></li>
-<li><a href="docs/05-Implantação.md"> Implantação</a></li>
+<li><a href="documents/01-Documentação de Contexto.md"> Documentação de Contexto</a></li>
+<li><a href="documents/02-Especificação do Projeto.md"> Especificação do Projeto</a></li>
+<li><a href="documents/03-Projeto de Interface.md"> Projeto de Interface</a></li>
+<li><a href="documents/04-Testes de Software.md"> Testes de Software</a></li>
+<li><a href="documents/05-Implantação.md"> Implantação</a></li>
 </ol>
 
 # Código
