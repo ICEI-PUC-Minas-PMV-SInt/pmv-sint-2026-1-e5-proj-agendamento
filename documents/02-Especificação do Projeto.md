@@ -50,10 +50,11 @@ As tecnologias escolhidas para o desenvolvimento do projeto foram definidas com 
 
 ## Project Model Canvas
 
-Colocar a imagem do modelo construído apresentando a proposta de solução.
+O Project Model Canvas (PMC) é uma ferramenta visual utilizada para organizar e comunicar de forma clara os principais elementos de um projeto. Por meio desse modelo é possível estruturar informações como justificativa, objetivos, benefícios esperados, produto final, partes interessadas, recursos e restrições.
 
-> **Links Úteis**:
-> Disponíveis em material de apoio do projeto
+Essa ferramenta facilita a visualização geral da proposta do projeto, permitindo compreender rapidamente o problema identificado, a solução proposta e os resultados esperados.
+
+![project model canvas](img/business-model-canvas.jpg)
 
 ## Requisitos
 
