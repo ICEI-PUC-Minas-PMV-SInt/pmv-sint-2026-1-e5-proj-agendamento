@@ -1,5 +1,6 @@
 # Especificações do Projeto
 
+
 <span style="color:red">Pré-requisitos: <a href="1-Documentação de Contexto.md"> Documentação de Contexto</a></span>
 
 Esta seção apresenta a definição do problema identificado junto à empreendedora parceira e a proposta de solução desenvolvida pela equipe, considerando principalmente a perspectiva do usuário. O objetivo é estruturar os requisitos e características do sistema de forma organizada, garantindo que o produto final atenda às necessidades reais do contexto de uso.
@@ -7,6 +8,58 @@ Esta seção apresenta a definição do problema identificado junto à empreende
 Atualmente, o processo de agendamento da clínica de estética é realizado *exclusivamente* por meio do Whatsapp e do Google Agenda, sem a existência de um sistema próprio para gerenciamento de clientes, histórico de atendimentos ou organização de informações relevantes sobre cada sessão. Essa forma de gerenciamento limita o controle das informações de clientes e dificulta o acompanhamento do histórico de procedimentos realizados.
 
 Diante desse cenário, propõe-se o desenvolvimento de um sistema de agendamento voltado inicialmente para a empreendedora responsável pela clínica, permitindo não apenas a organização dos horários de atendimento, mas também o cadastro e gerenciamento das clientes, incluindo informações como histórico de sessões, observações, dados de contato e datas importantes. O sistema também será pensado de forma escalável, permitindo a inclusão futura de novas modalidades de serviços estéticos ou sua adaptação para uso em outras clínicas.
+
+## Personas
+### Persona 1: Ivinah Sousa
+Idade: 26 anos 
+Profissão: Lash Designer e designer de sobrancelhas
+Experiência na área: 5 anos
+Tipo de negócio: Atendimento autônomo na área de estética
+
+Perfil
+Ivinah é uma profissional autônoma que trabalha com serviços de estética, principalmente extensão de cílios e design de sobrancelhas. Ela atende clientes mediante agendamento prévio e possui uma clientela majoritariamente recorrente. Em média, realiza cerca de três atendimentos por dia em horário comercial.
+
+Atualmente, os agendamentos são feitos principalmente por meio de mensagens recebidas no WhatsApp e, ocasionalmente, pelo Instagram. Após combinar o horário com a cliente, ela registra manualmente o atendimento em sua agenda.
+
+Objetivos: Organizar melhor sua agenda de atendimentos. Ter um registro centralizado das informações das clientes. Conseguir visualizar rapidamente os horários disponíveis. Acompanhar o histórico de procedimentos realizados pelas clientes.
+
+Dificuldades: Precisa responder manualmente às mensagens de agendamento. Às vezes tem dificuldade em localizar horários disponíveis rapidamente. Já ocorreram conflitos de agendamento ou esquecimentos de registro. O histórico das clientes fica disperso nas conversas do WhatsApp.
+
+Necessidades: Um sistema simples para registrar clientes e agendamentos. Visualizar a agenda de forma clara e organizada. Registrar o histórico de atendimentos das clientes. Facilitar a comunicação com as clientes para confirmação ou lembretes de atendimento.
+
+### Persona 2 – Manicure Autônoma (Usuária Potencial)
+Nome: Juliana Martins
+Idade: 32 anos
+Profissão: Manicure e pedicure autônoma
+Experiência na área: 4 anos
+Tipo de negócio: Atendimento domiciliar e em pequeno estúdio próprio
+
+Perfil
+Juliana é uma manicure autônoma que atende clientes mediante agendamento prévio. A maior parte de seus atendimentos ocorre durante o horário comercial, podendo variar conforme a disponibilidade das clientes. Assim como muitos profissionais da área da beleza, ela utiliza principalmente o WhatsApp para organizar seus horários e confirmar atendimentos.
+
+Por não possuir um sistema próprio para gerenciamento de agenda e clientes, Juliana registra seus horários manualmente em agendas ou aplicativos genéricos, o que pode tornar a organização dos atendimentos mais difícil.
+
+Objetivos: Organizar sua agenda de atendimentos de forma mais eficiente. Manter um cadastro atualizado das clientes. Registrar o histórico dos serviços realizados. Visualizar rapidamente os horários disponíveis para novos atendimentos.
+
+Dificuldades: Controle manual dos agendamentos por meio de mensagens. Dificuldade em localizar rapidamente horários disponíveis. Falta de um local centralizado para registrar informações das clientes. Necessidade de procurar conversas antigas para lembrar procedimentos realizados.
+
+Necessidades: Um sistema simples para cadastro de clientes. Visualização clara da agenda de atendimentos. Registro do histórico de serviços realizados. Facilidade para entrar em contato com as clientes.
+
+### História de Usuário
+
+| EU COMO (persona) | QUERO/PRECISO O QUE | PARA ... POR QUE |
+|---|---|---|
+| Empreendedora | cadastrar clientes no sistema | manter os dados das clientes organizados em um único lugar |
+| Empreendedora | visualizar a lista de clientes cadastradas | encontrar rapidamente uma cliente quando precisar |
+| Empreendedora | editar as informações de uma cliente | manter os dados das clientes sempre atualizados |
+| Empreendedora | registrar observações sobre uma cliente | lembrar informações importantes para próximos atendimentos |
+| Empreendedora | registrar um novo agendamento | organizar meus horários de atendimento |
+| Empreendedora | visualizar minha agenda de atendimentos | identificar facilmente horários disponíveis e ocupados |
+| Empreendedora | registrar o atendimento realizado | manter o histórico de procedimentos de cada cliente |
+| Empreendedora | consultar o histórico de uma cliente | lembrar quais procedimentos ela já realizou |
+| Empreendedora | visualizar o telefone da cliente no sistema | entrar em contato rapidamente quando necessário |
+| Empreendedora | iniciar uma conversa com a cliente pelo WhatsApp | agilizar a comunicação sobre agendamentos ou confirmações |
+| Empreendedora | cadastrar os tipos de serviços oferecidos | organizar melhor os procedimentos realizados no negócio |
 
 ## Arquitetura e Tecnologias
 
