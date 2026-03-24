@@ -1,0 +1,28 @@
+# ─── .NET / Backend ───────────────────────────────────────────────────────────
+backend/bin/
+backend/obj/
+backend/*.user
+backend/.vs/
+backend/appsettings.Development.json
+backend/appsettings.Production.json
+
+# ─── React Native / Frontend ──────────────────────────────────────────────────
+frontend/node_modules/
+frontend/.expo/
+frontend/dist/
+frontend/web-build/
+frontend/android/
+frontend/ios/
+
+# ─── Variáveis de ambiente (segredos) ─────────────────────────────────────────
+.env
+.env.local
+.env.production
+*.env
+
+# ─── OS / Editores ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.cursor/
+.claude/

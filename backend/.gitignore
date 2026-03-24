@@ -1,0 +1,17 @@
+## .NET / C#
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+*.log
+
+## Segredos — NUNCA commitar
+appsettings.Development.json
+appsettings.Production.json
+*.env
+
+## Publicação
+publish/
