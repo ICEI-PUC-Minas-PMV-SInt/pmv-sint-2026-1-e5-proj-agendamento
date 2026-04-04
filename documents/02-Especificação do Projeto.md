@@ -196,3 +196,80 @@ O projeto da base de dados corresponde à representação das entidades e relaci
 
 ![Projeto Base de Dados](img/hLDXQzim4FtkNo7IBmjRInB8br5AFTVPp9fi96xPDtELRxQeh0kIN5Yx_VTTt9Y89eGMce0nxptTtNidNpeFrhUDZjozCckmq0Yj3Fe_QnHaVKq1uU5EetYAXFW2yhwor9eo8KrMdCocc_-68LkYtQBJxiVeZ8nVgKSKuqdqBwWeDJZt3XMZvq8tgvjucVte2duKgYnQru9L93wBR96B.png)
 
+## Planejamento do projeto
+
+### Cronograma
+
+O cronograma do projeto foi definido considerando as etapas necessárias para o desenvolvimento da solução, desde o levantamento de requisitos até a implementação do sistema e documentação final.
+
+| Etapa | Período |
+|------|--------|
+Levantamento de requisitos e definição do problema | Março |
+Modelagem do sistema e elaboração da documentação | Março |
+Desenvolvimento do back-end e banco de dados | Abril |
+Desenvolvimento do front-end (aplicação mobile) | Maio |
+Testes e ajustes do sistema | Maio |
+Finalização da documentação e entrega final | Junho |
+
+---
+
+### Custos
+
+Por se tratar de um projeto acadêmico, não há custos diretos envolvidos no desenvolvimento da aplicação. As ferramentas utilizadas são gratuitas ou disponibilizadas no ambiente acadêmico.
+
+| Item | Custo |
+|------|------|
+Desenvolvimento | R$ 0,00 |
+Ferramentas (GitHub, VS Code, etc.) | R$ 0,00 |
+Banco de dados | R$ 0,00 |
+Infraestrutura | R$ 0,00 |
+
+---
+
+### Equipe
+
+O desenvolvimento do projeto está sendo realizado por uma equipe de estudantes, com divisão de responsabilidades conforme as áreas de atuação no sistema.
+
+| Integrante | Responsabilidade |
+|-------------|--------------|
+Alana Alves Maia| Desenvolvimento front-end e documentação|
+Rodrigo da Costa Souza| Desenvolvimento front-end e apoio no back-end e banco de dados|
+Tatiana Haveroth Barbosa | Desenvolvimento front-end e documentação |
+
+## Snapshot do projeto (prints)
+Figura apresenta o quadro de tarefas do projeto no GitHub, evidenciando a organização das atividades em diferentes estágios de desenvolvimento, como backlog, em andamento e concluídas.
+![Quadro de tarefas](img/Projects.png)
+Figura apresenta a lista de issues do projeto, demonstrando a definição e distribuição das tarefas entre os membros da equipe.
+![Issues](img/Issues.png)
+Figura apresenta o histórico de commits do projeto no GitHub, evidenciando as contribuições realizadas pelos membros da equipe ao longo do desenvolvimento.
+![Commits](img/Commits.png)
+<br>
+## Análise de melhorias do processo
+
+A análise do processo atual de agendamento evidenciou algumas limitações relacionadas à organização e ao controle das informações. Atualmente, a profissional realiza os agendamentos por meio de mensagens no WhatsApp e, ocasionalmente, pelo Instagram, sendo necessário responder manualmente aos clientes, verificar a disponibilidade de horários e registrar os atendimentos de forma não estruturada.
+
+Esse processo pode gerar problemas como conflitos de horários, esquecimento de agendamentos, dificuldade para localizar horários disponíveis e ausência de um histórico organizado dos atendimentos realizados. Além disso, o tempo gasto com a comunicação manual pode impactar a produtividade da profissional.
+
+Com a implementação do sistema proposto, espera-se a melhoria significativa desse processo. A aplicação permitirá centralizar as informações de clientes e agendamentos em um único ambiente, facilitando a visualização da agenda, reduzindo a ocorrência de conflitos de horários e proporcionando um melhor controle dos atendimentos realizados.
+
+Além disso, o sistema possibilitará o registro e consulta do histórico de atendimentos, permitindo acompanhar os serviços realizados por cada cliente. A integração com o WhatsApp também contribuirá para agilizar a comunicação, facilitando o envio de lembretes e confirmações de agendamento.
+
+Dessa forma, a solução proposta contribui para a otimização do tempo, melhoria da organização e aumento da eficiência no gerenciamento dos atendimentos, impactando positivamente a qualidade do serviço prestado.
+
+## Indicadores de desempenho
+
+Para avaliar a eficiência do processo de agendamento e os benefícios da solução proposta, foram definidos alguns indicadores de desempenho que permitem acompanhar a melhoria na organização e no atendimento da profissional.
+
+Entre os principais indicadores, destacam-se:
+
+- **Tempo médio para realização de agendamentos:** mede o tempo gasto pela profissional para responder e registrar um novo agendamento, permitindo avaliar a redução do esforço manual.
+
+- **Quantidade de conflitos de horário:** indica o número de ocorrências em que dois atendimentos são marcados para o mesmo horário, permitindo verificar a eficiência do sistema na organização da agenda.
+
+- **Número de atendimentos realizados por período:** possibilita acompanhar a produtividade da profissional ao longo do tempo.
+
+- **Taxa de retorno de clientes:** mede a frequência com que clientes retornam para novos atendimentos, permitindo analisar o nível de fidelização.
+
+- **Tempo médio de resposta ao cliente:** avalia o tempo entre a solicitação de agendamento e a resposta da profissional, indicando melhorias na comunicação.
+
+A utilização desses indicadores permite monitorar o desempenho do sistema e identificar possíveis oportunidades de melhoria contínua no processo de agendamento e atendimento.
