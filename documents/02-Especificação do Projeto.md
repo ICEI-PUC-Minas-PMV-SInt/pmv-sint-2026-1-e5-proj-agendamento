@@ -196,3 +196,42 @@ O projeto da base de dados corresponde à representação das entidades e relaci
 
 ![Projeto Base de Dados](img/hLDXQzim4FtkNo7IBmjRInB8br5AFTVPp9fi96xPDtELRxQeh0kIN5Yx_VTTt9Y89eGMce0nxptTtNidNpeFrhUDZjozCckmq0Yj3Fe_QnHaVKq1uU5EetYAXFW2yhwor9eo8KrMdCocc_-68LkYtQBJxiVeZ8nVgKSKuqdqBwWeDJZt3XMZvq8tgvjucVte2duKgYnQru9L93wBR96B.png)
 
+## Processos de Negócio (BPMN)
+
+*Business Process Model and Notation* (BPMN) ou, em português, Modelo e Notação de Processos de Negócio, trata-se de uma padronização técnica e visual amplamente adotada no mercado para mapear, documentar e explicar o passo a passo de como os fluxos de trabalho acontecem no dia a dia de uma organização.
+
+Neste documento, a compreensão dos processos de negócio é fundamental para o desenvolvimento da aplicação. Identificar como o trabalho é feito atualmente ajuda a mapear limitações, gargalos e falhas operacionais, enquanto desenhar a situação futura estrutura e justifica como o novo sistema será inserido na rotina da clínica para resolver esses problemas.
+
+Para essa documentação, utilizamos a notação BPMN simplificada para ilustrar o fluxo de Agendamento da clínica de estética.
+
+
+
+### 1. Processo Atual
+
+O cenário atual retrata a organização da empreendedora sem o uso de um sistema autoral. O processo depende do WhatsApp para comunicação e do Google Agenda para armazenamento do horário, o que não cria uma base de dados de clientes e dificulta recuperar o histórico.
+
+#### Diagrama da Situação Atual
+
+![bpmn processo atual](img/bpmn-processo-atual.jpg)
+
+
+**Problemas identificados:**
+- Retrabalho entre duas ferramentas que não conversam (Google Agenda e WhatsApp).
+- Não há registro associando qual serviço foi feito, apenas o evento de horário na agenda.
+- Histórico de pagamentos e procedimentos realizados fica disperso, gerando confusão se houver algum retorno da cliente meses depois.
+
+
+
+### 2. Processo Futuro
+
+O processo futuro retrata a introdução do nosso novo aplicativo móvel. Esse processo agora centraliza as informações. O sistema se torna a "fonte da verdade" não só para horários, mas para dados de serviços prestados e das clientes.
+
+#### Diagrama da Situação Futura
+
+![bpmn processo futuro](img/bpmn-processo-futuro.jpg)
+
+
+**Benefícios Alcançados:**
+- Os dados do cliente, histórico e agendamentos ficam atrelados ao mesmo lugar (Banco de Dados Central).
+- Padronização e preenchimento ágil.
+- Geração de informações para o Painel de Indicadores (Métricas).
