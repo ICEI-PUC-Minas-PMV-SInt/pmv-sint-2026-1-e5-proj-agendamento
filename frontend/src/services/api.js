@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BASE_URL = 'http://10.0.2.2:5000/api'; // Android Emulator → localhost
-
+//const BASE_URL = 'http://10.0.2.2:5000/api'; // Android Emulator → localhost
+const BASE_URL = 'http://localhost:5034/api'; // quando estiver usando pwla web
 async function getToken() {
   return AsyncStorage.getItem('token');
 }
