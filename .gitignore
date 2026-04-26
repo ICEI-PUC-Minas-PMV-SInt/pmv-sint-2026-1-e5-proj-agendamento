@@ -13,12 +13,16 @@ frontend/dist/
 frontend/web-build/
 frontend/android/
 frontend/ios/
+frontend/.vs/
 
 # ─── Variáveis de ambiente (segredos) ─────────────────────────────────────────
 .env
 .env.local
 .env.production
 *.env
+
+# Visual Studio
+.vs/
 
 # ─── OS / Editores ────────────────────────────────────────────────────────────
 .DS_Store
