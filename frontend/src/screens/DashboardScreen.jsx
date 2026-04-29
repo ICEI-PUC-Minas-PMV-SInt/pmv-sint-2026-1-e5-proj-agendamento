@@ -44,8 +44,12 @@ const appointments = [
   },
 ];
 
-export default function DashboardScreen({ route }) {
+export default function DashboardScreen({ route, navigation }) {
   const userName = route?.params?.userName;
+
+  function handleLogout() {
+    navigation.replace('Login');
+  }
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -56,7 +60,11 @@ export default function DashboardScreen({ route }) {
           </Text>
           <Text style={styles.subtitle}>Sua agenda de hoje</Text>
         </View>
-        <View style={styles.avatarPlaceholder}>
+        <View style={styles.headerRight}>
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Text style={styles.logoutText}>Sair</Text>
+          </TouchableOpacity>
+          <View style={styles.avatarPlaceholder} />
         </View>
       </View>
 
@@ -169,6 +177,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.mutedText,
     marginTop: 4,
+  },
+  headerRight: {
+    flexDirection: 'column-reverse',
+    alignItems: 'flex-end',
+    gap: 8,
+  },
+  logoutButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: '#F0F0F0',
+  },
+  logoutText: {
+    fontSize: 14,
+    color: colors.black,
+    fontWeight: 'bold',
   },
   avatarPlaceholder: {
     width: 50,
