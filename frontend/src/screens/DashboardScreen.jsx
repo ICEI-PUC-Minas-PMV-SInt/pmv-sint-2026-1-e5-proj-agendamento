@@ -1,15 +1,7 @@
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { colors } from '../theme/colors';
 import BottomMenu from '../components/BottomMenu';
-
-const days = [
-  { day: 'DOM', date: '14', active: false },
-  { day: 'SEG', date: '15', active: true },
-  { day: 'TER', date: '16', active: false },
-  { day: 'QUA', date: '17', active: false },
-  { day: 'QUI', date: '18', active: false },
-  { day: 'SEX', date: '19', active: false },
-];
 
 const appointments = [
   {
@@ -47,6 +39,36 @@ const appointments = [
 
 export default function DashboardScreen({ route, navigation }) {
   const userName = route?.params?.userName;
+  const [days, setDays] = useState([]);
+
+  useEffect(() => {
+    const weekDays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+    const generatedDays = [];
+    const today = new Date();
+
+    for (let i = -1; i <= 14; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+
+      generatedDays.push({
+        id: i,
+        day: weekDays[d.getDay()],
+        date: String(d.getDate()).padStart(2, '0'),
+        active: i === 0,
+        fullDate: d
+      });
+    }
+    setDays(generatedDays);
+  }, []);
+
+  function handleDayPress(selectedId) {
+    setDays((prevDays) =>
+      prevDays.map((item) => ({
+        ...item,
+        active: item.id === selectedId
+      }))
+    );
+  }
 
   function handleLogout() {
     navigation.replace('Login');
@@ -71,13 +93,14 @@ export default function DashboardScreen({ route, navigation }) {
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateSelectorContainer}>
-          {days.map((item, index) => (
+          {days.map((item) => (
             <TouchableOpacity
-              key={index}
+              key={item.id}
               style={[
                 styles.dateCard,
                 item.active && styles.dateCardActive
               ]}
+              onPress={() => handleDayPress(item.id)}
             >
               <Text style={[styles.dayText, item.active && styles.textWhite]}>{item.day}</Text>
               <Text style={[styles.dateText, item.active && styles.textWhite]}>{item.date}</Text>
