@@ -45,38 +45,38 @@ export default function ServicesScreen({ navigation }) {
         setShowForm(true);
     }
 
-   async function handleSaveService() {
-  if (!nome || !preco || !duracaoMinutos) {
-    Alert.alert('Atenção', 'Preencha nome, preço e duração.');
-    return;
-  }
+    async function handleSaveService() {
+        if (!nome || !preco || !duracaoMinutos) {
+            Alert.alert('Atenção', 'Preencha nome, preço e duração.');
+            return;
+        }
 
-  const serviceData = {
-    nome,
-    descricao,
-    duracaoMinutos: Number(duracaoMinutos),
-    preco: Number(preco),
-    ativo: true,
-  };
+        const serviceData = {
+            nome,
+            descricao,
+            duracaoMinutos: Number(duracaoMinutos),
+            preco: Number(preco),
+            ativo: true,
+        };
 
-  try {
-    if (editingService) {
-      await api.put(`/Servico/${editingService.id}`, {
-        id: editingService.id,
-        ...serviceData,
-      });
-    } else {
-      await api.post('/Servico', serviceData);
+        try {
+            if (editingService) {
+                await api.put(`/Servico/${editingService.id}`, {
+                    id: editingService.id,
+                    ...serviceData,
+                });
+            } else {
+                await api.post('/Servico', serviceData);
+            }
+
+            await loadServices();
+        } catch (error) {
+            Alert.alert('Erro', error.message);
+        } finally {
+            resetForm();
+        }
+
     }
-
-    await loadServices();
-  } catch (error) {
-    Alert.alert('Erro', error.message);
-  } finally {
-    resetForm();
-       }
-
-}
 
     function handleDelete(service) {
         const confirmDelete = window.confirm
@@ -192,8 +192,8 @@ const styles = StyleSheet.create({
         backgroundColor: colors.background,
     },
     title: {
-        fontSize: 24,
-        fontWeight: '700',
+        fontSize: 32,
+        fontFamily: 'BodoniModa_700Bold',
         color: colors.text,
         marginBottom: 16,
         textAlign: 'center',

@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontFamily: 'BodoniModa_700Bold',
     color: colors.black,
   },
   greetingName: {
