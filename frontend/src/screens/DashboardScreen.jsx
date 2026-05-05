@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { colors } from '../theme/colors';
+import BottomMenu from '../components/BottomMenu';
 
 const days = [
   { day: 'DOM', date: '14', active: false },
@@ -52,110 +53,116 @@ export default function DashboardScreen({ route, navigation }) {
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>
-            Olá, <Text style={styles.greetingName}>{userName}</Text>
-          </Text>
-          <Text style={styles.subtitle}>Sua agenda de hoje</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-            <Text style={styles.logoutText}>Sair</Text>
-          </TouchableOpacity>
-          <View style={styles.avatarPlaceholder} />
-        </View>
-      </View>
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateSelectorContainer}>
-        {days.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.dateCard,
-              item.active && styles.dateCardActive
-            ]}
-          >
-            <Text style={[styles.dayText, item.active && styles.textWhite]}>{item.day}</Text>
-            <Text style={[styles.dateText, item.active && styles.textWhite]}>{item.date}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      <View style={styles.summaryContainer}>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>PRÓXIMO</Text>
-          <Text style={styles.summaryValue}>14:30</Text>
-          <View style={styles.summaryRow}>
-            <View style={styles.blackCircle} />
-            <Text style={styles.summarySubtitle}>Manutenção</Text>
-          </View>
-        </View>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>NA SEMANA</Text>
-          <View style={styles.summaryRowValue}>
-            <Text style={styles.summaryValue}>24</Text>
-            <Text style={styles.summarySubtitleWeek}> agend.</Text>
-          </View>
-          <View style={styles.progressBarBg}>
-            <View style={styles.progressBarFill} />
-          </View>
-          <Text style={styles.revenueText}>R$ 3.2k prev.</Text>
-        </View>
-      </View>
-
-      <View style={styles.pendingCard}>
-        <View style={styles.pendingLeft}>
-          <View style={styles.pendingCircleLeft} />
+    <View style={styles.mainContainer}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
           <View>
-            <Text style={styles.pendingTitle}>Pendentes</Text>
-            <Text style={styles.pendingSubtitle}>3 aguardando confirmação</Text>
+            <Text style={styles.greeting}>
+              Olá, <Text style={styles.greetingName}>{userName}</Text>
+            </Text>
+            <Text style={styles.subtitle}>Sua agenda de hoje</Text>
+          </View>
+          <View style={styles.headerRight}>
+            <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+              <Text style={styles.logoutText}>Sair</Text>
+            </TouchableOpacity>
+            <View style={styles.avatarPlaceholder} />
           </View>
         </View>
-        <View style={styles.pendingCircleRight} />
-      </View>
 
-      <View style={styles.agendaHeader}>
-        <Text style={styles.agendaTitle}>AGENDA DO DIA</Text>
-        <TouchableOpacity>
-          <Text style={styles.filtersText}>Filtros</Text>
-        </TouchableOpacity>
-      </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateSelectorContainer}>
+          {days.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.dateCard,
+                item.active && styles.dateCardActive
+              ]}
+            >
+              <Text style={[styles.dayText, item.active && styles.textWhite]}>{item.day}</Text>
+              <Text style={[styles.dateText, item.active && styles.textWhite]}>{item.date}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-      <View style={styles.agendaList}>
-        {appointments.map((apt) => (
-          <View key={apt.id} style={styles.appointmentRow}>
-            <Text style={styles.appointmentTime}>{apt.time}</Text>
-            <View style={[styles.appointmentCard, { borderLeftColor: apt.borderColor, borderLeftWidth: apt.borderColor !== 'transparent' ? 4 : 0 }]}>
-              <View style={styles.appointmentCardHeader}>
-                <Text style={styles.appointmentTitle}>{apt.title}</Text>
-                <View style={[styles.statusBadge, { backgroundColor: apt.statusBg }]}>
-                  <Text style={[styles.statusText, { color: apt.statusColor }]}>{apt.status}</Text>
-                </View>
-              </View>
-              <Text style={styles.appointmentClient}>{apt.client}</Text>
-              {apt.showButton && (
-                <View style={styles.appointmentActions}>
-                  <TouchableOpacity style={styles.startButton}>
-                    <Text style={styles.startButtonText}>Iniciar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionSquare} />
-                </View>
-              )}
+        <View style={styles.summaryContainer}>
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryTitle}>PRÓXIMO</Text>
+            <Text style={styles.summaryValue}>14:30</Text>
+            <View style={styles.summaryRow}>
+              <View style={styles.blackCircle} />
+              <Text style={styles.summarySubtitle}>Manutenção</Text>
             </View>
           </View>
-        ))}
-      </View>
-      <View style={{ height: 40 }} />
-    </ScrollView>
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryTitle}>NA SEMANA</Text>
+            <View style={styles.summaryRowValue}>
+              <Text style={styles.summaryValue}>24</Text>
+              <Text style={styles.summarySubtitleWeek}> agend.</Text>
+            </View>
+            <View style={styles.progressBarBg}>
+              <View style={styles.progressBarFill} />
+            </View>
+            <Text style={styles.revenueText}>R$ 3.2k prev.</Text>
+          </View>
+        </View>
+
+        <View style={styles.pendingCard}>
+          <View style={styles.pendingLeft}>
+            <View style={styles.pendingCircleLeft} />
+            <View>
+              <Text style={styles.pendingTitle}>Pendentes</Text>
+              <Text style={styles.pendingSubtitle}>3 aguardando confirmação</Text>
+            </View>
+          </View>
+          <View style={styles.pendingCircleRight} />
+        </View>
+
+        <View style={styles.agendaHeader}>
+          <Text style={styles.agendaTitle}>AGENDA DO DIA</Text>
+          <TouchableOpacity>
+            <Text style={styles.filtersText}>Filtros</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.agendaList}>
+          {appointments.map((apt) => (
+            <View key={apt.id} style={styles.appointmentRow}>
+              <Text style={styles.appointmentTime}>{apt.time}</Text>
+              <View style={[styles.appointmentCard, { borderLeftColor: apt.borderColor, borderLeftWidth: apt.borderColor !== 'transparent' ? 4 : 0 }]}>
+                <View style={styles.appointmentCardHeader}>
+                  <Text style={styles.appointmentTitle}>{apt.title}</Text>
+                  <View style={[styles.statusBadge, { backgroundColor: apt.statusBg }]}>
+                    <Text style={[styles.statusText, { color: apt.statusColor }]}>{apt.status}</Text>
+                  </View>
+                </View>
+                <Text style={styles.appointmentClient}>{apt.client}</Text>
+                {apt.showButton && (
+                  <View style={styles.appointmentActions}>
+                    <TouchableOpacity style={styles.startButton}>
+                      <Text style={styles.startButtonText}>Iniciar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.actionSquare} />
+                  </View>
+                )}
+              </View>
+            </View>
+          ))}
+        </View>
+        <View style={{ height: 100 }} />
+      </ScrollView>
+      <BottomMenu active="Dashboard" navigation={navigation} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  container: {
+    flex: 1,
     paddingTop: 60,
     paddingHorizontal: 24,
   },
