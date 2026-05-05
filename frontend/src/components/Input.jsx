@@ -10,6 +10,7 @@ export default function AppInput({
     keyboardType = 'default',
     multiline = false,
     error,
+    ...rest
 }) {
     return (
         <View style={styles.container}>
@@ -24,6 +25,7 @@ export default function AppInput({
                 secureTextEntry={secureTextEntry}
                 keyboardType={keyboardType}
                 multiline={multiline}
+                {...rest}
             />
 
             {error && <Text style={styles.error}>{error}</Text>}
