@@ -10,6 +10,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
 import ServicesScreen from './src/screens/ServicesScreen';
 import ClientsScreen from './src/screens/ClientsScreen';
+import ClientProfileScreen from './src/screens/ClientProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,7 @@ export default function App() {
                 <Stack.Screen name="Services" component={ServicesScreen} />
                 <Stack.Screen name="Dashboard" component={DashboardScreen} />
                 <Stack.Screen name="Clientes" component={ClientsScreen} />
+                <Stack.Screen name="ClientProfile" component={ClientProfileScreen} />
             </Stack.Navigator>
 
             <StatusBar style="auto" />

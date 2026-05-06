@@ -243,8 +243,7 @@ export default function ClientsScreen({ navigation }) {
           </View>
         )}
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
-            <AppLitleButton title="Editar" onPress={() => handleEdit(item)} />
-            <AppLitleButton title="Excluir" onPress={() => handleDelete(item)} />
+            <AppLitleButton title="Ver Cliente" onPress={() => navigation.navigate('ClientProfile', { client: item })} />
         </View>
       </View>
     </View>
