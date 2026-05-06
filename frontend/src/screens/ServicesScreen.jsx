@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Alert, TextInput, TouchableOpacity } from 'react-native';
 
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -12,6 +12,7 @@ export default function ServicesScreen({ navigation }) {
     const [services, setServices] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [editingService, setEditingService] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [nome, setNome] = useState('');
     const [descricao, setDescricao] = useState('');
@@ -101,16 +102,40 @@ export default function ServicesScreen({ navigation }) {
         loadServices();
     }, []);
 
+    const filteredServices = services.filter((service) =>
+        service.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (service.descricao && service.descricao.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Catálogo de Serviços</Text>
 
-            <View style={{ width: '100%', maxWidth: 400 }}>
-                <Button
-                    title={showForm ? 'Cancelar cadastro' : '+ Novo serviço'}
-                    onPress={showForm ? resetForm : () => setShowForm(true)}
-                />
-            </View>
+            {showForm && (
+                <View style={{ width: '100%', maxWidth: 400, marginBottom: 16 }}>
+                    <Button
+                        title="Cancelar cadastro"
+                        onPress={resetForm}
+                    />
+                </View>
+            )}
+
+            {!showForm && (
+                <View style={[styles.actionRow, { width: '100%', maxWidth: 400 }]}>
+                    <View style={styles.searchWrapper}>
+                        <TextInput
+                            style={styles.searchInput}
+                            placeholder="Buscar serviço..."
+                            placeholderTextColor={colors.mutedText}
+                            value={searchQuery}
+                            onChangeText={setSearchQuery}
+                        />
+                    </View>
+                    <TouchableOpacity style={styles.newServiceButton} onPress={() => setShowForm(true)}>
+                        <Text style={styles.newServiceButtonText}>+ Novo serviço</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
 
             {showForm && (
                 <View style={styles.form}>
@@ -153,7 +178,8 @@ export default function ServicesScreen({ navigation }) {
             )}
 
             <FlatList
-                data={services}
+                style={{ width: '100%' }}
+                data={filteredServices}
                 keyExtractor={(item) => String(item.id)}
                 contentContainerStyle={styles.list}
                 renderItem={({ item }) => (
@@ -185,6 +211,38 @@ export default function ServicesScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+    actionRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+        gap: 12,
+    },
+    searchWrapper: {
+        flex: 1,
+    },
+    newServiceButton: {
+        backgroundColor: colors.black,
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        borderRadius: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    newServiceButtonText: {
+        color: colors.white,
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    searchInput: {
+        backgroundColor: colors.white,
+        borderRadius: 24,
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        fontSize: 14,
+        color: colors.text,
+        borderWidth: 1,
+        borderColor: colors.border,
+    },
     container: {
         flex: 1,
         padding: 24,
@@ -210,16 +268,17 @@ const styles = StyleSheet.create({
     },
     list: {
         paddingTop: 20,
-        paddingBottom: 40,
+        paddingBottom: 120,
         width: '100%',
         maxWidth: 400,
-        paddingBottom: 120,
+        alignSelf: 'center',
     },
     card: {
         backgroundColor: colors.white,
         padding: 16,
         borderRadius: 16,
         marginBottom: 12,
+        width: '100%',
     },
     serviceName: {
         fontSize: 18,

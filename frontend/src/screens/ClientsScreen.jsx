@@ -261,12 +261,14 @@ export default function ClientsScreen({ navigation }) {
       <View style={styles.topContainer}>
         {renderHeader()}
 
-        <View style={{ marginBottom: 16 }}>
-          <Button
-            title={showForm ? 'Cancelar cadastro' : '+ Novo cliente'}
-            onPress={showForm ? resetForm : () => setShowForm(true)}
-          />
-        </View>
+        {showForm && (
+          <View style={{ marginBottom: 16 }}>
+            <Button
+              title="Cancelar cadastro"
+              onPress={resetForm}
+            />
+          </View>
+        )}
 
         {showForm && (
           <View style={styles.form}>
@@ -321,14 +323,19 @@ export default function ClientsScreen({ navigation }) {
 
         {!showForm && (
           <>
-            <View style={styles.searchContainer}>
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Buscar nome ou telefone..."
-                placeholderTextColor={colors.mutedText}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
+            <View style={styles.actionRow}>
+              <View style={styles.searchWrapper}>
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder="Buscar nome ou telefone..."
+                  placeholderTextColor={colors.mutedText}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                />
+              </View>
+              <TouchableOpacity style={styles.newClientButton} onPress={() => setShowForm(true)}>
+                <Text style={styles.newClientButtonText}>+ Novo cliente</Text>
+              </TouchableOpacity>
             </View>
 
             <ScrollView
@@ -431,8 +438,27 @@ const styles = StyleSheet.create({
     top: 8,
     right: 8,
   },
-  searchContainer: {
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 20,
+    gap: 12,
+  },
+  searchWrapper: {
+    flex: 1,
+  },
+  newClientButton: {
+    backgroundColor: colors.black,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  newClientButtonText: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '600',
   },
   searchInput: {
     backgroundColor: colors.white,
