@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, SectionList, Image, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { colors } from '../theme/colors';
 import BottomMenu from '../components/BottomMenu';
@@ -46,9 +47,11 @@ export default function ClientsScreen({ navigation }) {
     return `${v.substring(0, 4)}-${v.substring(4, 6)}-${v.substring(6)}`;
   };
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchClients();
+    }, [])
+  );
 
   const fetchClients = async () => {
     try {

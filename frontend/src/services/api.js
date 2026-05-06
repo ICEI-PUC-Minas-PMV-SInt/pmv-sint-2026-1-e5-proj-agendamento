@@ -18,12 +18,24 @@ async function request(path, options = {}) {
     },
   });
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message ?? `Erro ${response.status}`);
+  const text = await response.text();
+  let data;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch (err) {
+    data = text;
   }
 
-  return response.json();
+  if (!response.ok) {
+    const backendMessage = typeof data === 'object' && data !== null 
+      ? (data.message || data.title || JSON.stringify(data)) 
+      : data;
+    const errorMessage = backendMessage ? `[HTTP ${response.status}] ${backendMessage}` : `Erro HTTP ${response.status}`;
+    console.error('API Error:', { path, status: response.status, backendMessage });
+    throw new Error(errorMessage);
+  }
+
+  return data;
 }
 
 export const api = {

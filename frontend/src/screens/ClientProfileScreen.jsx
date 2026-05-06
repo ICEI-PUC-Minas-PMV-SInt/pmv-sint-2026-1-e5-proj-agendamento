@@ -1,11 +1,154 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert, Platform } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import BottomMenu from '../components/BottomMenu';
+import Input from '../components/Input';
+import Button from '../components/Button';
+import { api } from '../services/api';
 
 export default function ClientProfileScreen({ route, navigation }) {
-  const client = route?.params?.client || {};
+  const [client, setClient] = useState(route?.params?.client || {});
+  const [showForm, setShowForm] = useState(false);
+
+  const [nome, setNome] = useState(client.name || '');
+  const [telefone, setTelefone] = useState(client.phone === 'Sem telefone' ? '' : (client.phone || ''));
+  const [email, setEmail] = useState(client.email || '');
+  const [dataNascimento, setDataNascimento] = useState(client.dataNascimento ? client.dataNascimento.split('T')[0] : '');
+  const [observacoes, setObservacoes] = useState(client.observacoes || '');
+
+  const formatPhone = (value) => {
+    let v = value.replace(/\D/g, '');
+    if (v.length > 11) v = v.substring(0, 11);
+    if (v.length === 0) return '';
+    if (v.length <= 2) return `(${v}`;
+    if (v.length <= 3) return `(${v.substring(0, 2)}) ${v.substring(2)}`;
+    if (v.length <= 7) return `(${v.substring(0, 2)}) ${v.substring(2, 3)} ${v.substring(3)}`;
+    return `(${v.substring(0, 2)}) ${v.substring(2, 3)} ${v.substring(3, 7)} ${v.substring(7)}`;
+  };
+
+  const formatDate = (value) => {
+    let v = value.replace(/\D/g, '');
+    if (v.length > 8) v = v.substring(0, 8);
+    if (v.length === 0) return '';
+    if (v.length <= 4) return v;
+    if (v.length <= 6) return `${v.substring(0, 4)}-${v.substring(4)}`;
+    return `${v.substring(0, 4)}-${v.substring(4, 6)}-${v.substring(6)}`;
+  };
+
+  async function handleSaveClient() {
+    const newErrors = [];
+
+    if (!nome || nome.trim().length < 3) {
+      newErrors.push('O nome deve ter pelo menos 3 caracteres.');
+    }
+
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email) || email.length < 8) {
+        newErrors.push('E-mail inválido ou muito curto (mínimo 8 caracteres).');
+      }
+    }
+
+    if (telefone) {
+      const phoneClean = telefone.replace(/\D/g, '');
+      if (phoneClean.length > 0 && phoneClean.length < 10) {
+        newErrors.push('O telefone deve ter pelo menos 10 dígitos.');
+      }
+    }
+
+    if (dataNascimento) {
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(dataNascimento)) {
+        newErrors.push('Data de nascimento em formato inválido (AAAA-MM-DD).');
+      }
+    }
+
+    if (newErrors.length > 0) {
+      if (Platform.OS === 'web') {
+        window.alert('Atenção: Verifique os erros no formulário.\n' + newErrors.join('\n'));
+      } else {
+        Alert.alert('Atenção', 'Verifique os erros no formulário.\n' + newErrors.join('\n'));
+      }
+      return;
+    }
+
+    const clientData = {
+      nome: nome.trim(),
+      telefone,
+      email,
+      dataNascimento: dataNascimento || null,
+      observacoes,
+    };
+
+    try {
+      await api.put(`/Cliente/${client.id}`, {
+        id: Number(client.id),
+        ...clientData,
+      });
+
+      const updatedClient = {
+        ...client,
+        name: clientData.nome,
+        phone: clientData.telefone || 'Sem telefone',
+        email: clientData.email,
+        dataNascimento: clientData.dataNascimento,
+        observacoes: clientData.observacoes
+      };
+
+      setClient(updatedClient);
+      setShowForm(false);
+
+      if (Platform.OS === 'web') {
+        window.alert('Cliente atualizado com sucesso!');
+      } else {
+        Alert.alert('Sucesso', 'Cliente atualizado com sucesso!');
+      }
+
+      navigation.replace('ClientProfile', { client: updatedClient });
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.response?.data || error.message;
+      if (Platform.OS === 'web') {
+        window.alert('Erro: ' + (typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : errorMessage));
+      } else {
+        Alert.alert('Erro', typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : errorMessage);
+      }
+    }
+  }
+
+  function handleDelete() {
+    if (Platform.OS === 'web') {
+      const confirmDelete = window.confirm('Tem certeza que deseja excluir esta cliente? Esta ação não poderá ser desfeita e os dados serão perdidos.');
+      if (confirmDelete) {
+        deleteClient();
+      }
+    } else {
+      Alert.alert(
+        'Excluir Cliente',
+        'Tem certeza que deseja excluir esta cliente? Esta ação não poderá ser desfeita e os dados serão perdidos.',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Excluir', style: 'destructive', onPress: deleteClient }
+        ]
+      );
+    }
+  }
+
+  async function deleteClient() {
+    try {
+      await api.delete(`/Cliente/${client.id}`);
+      if (Platform.OS === 'web') {
+        window.alert('Cliente excluída com sucesso!');
+        navigation.navigate('Clientes');
+      } else {
+        Alert.alert('Sucesso', 'Cliente excluída com sucesso!', [
+          { text: 'OK', onPress: () => navigation.navigate('Clientes') }
+        ]);
+      }
+    } catch (error) {
+      Alert.alert('Erro', error.message);
+    }
+  }
 
   const clientName = client.name || 'Amanda Silva';
   const clientInitials = client.initials || clientName.charAt(0).toUpperCase();
@@ -23,149 +166,200 @@ export default function ClientProfileScreen({ route, navigation }) {
           <Feather name="chevron-left" size={24} color={colors.black} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Perfil da Cliente</Text>
-        <TouchableOpacity style={styles.headerButton}>
-          <Feather name="edit" size={18} color={colors.black} />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.profileSection}>
-          <View style={styles.avatarContainer}>
-            <Image source={avatarSource} style={styles.avatar} />
-            {isVip && (
-              <View style={styles.vipBadge}>
-                <Text style={styles.vipText}>👑 VIP</Text>
-              </View>
-            )}
-          </View>
-          <Text style={styles.clientName}>{clientName}</Text>
-          <Text style={styles.clientSince}>{clientSince}</Text>
-
-          <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.actionButton}>
-              <Feather name="message-circle" size={20} color="#25D366" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Feather name="phone" size={20} color={colors.roseGold} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Feather name="mail" size={20} color={colors.mutedText} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Feather name="calendar" size={14} color={colors.roseGold} style={styles.statIcon} />
-            <Text style={styles.statLabel}>Total de Visitas</Text>
-            <Text style={styles.statValue}>12</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Feather name="file-text" size={14} color={colors.roseGold} style={styles.statIcon} />
-            <Text style={styles.statLabel}>Ticket Médio</Text>
-            <Text style={styles.statValue}>R$ 185</Text>
-          </View>
-        </View>
-
-        <View style={styles.sectionCard}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Observações</Text>
-            <TouchableOpacity>
-              <Feather name="edit-2" size={16} color={colors.roseGold} />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.sectionContent}>
-            <Text style={styles.subTitle}>ALERGIAS</Text>
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>Fita Micropore</Text>
-            </View>
-            <Text style={[styles.subTitle, { marginTop: 16 }]}>PREFERÊNCIAS</Text>
-            <Text style={styles.bodyText}>
-              {client.observacoes || "Gosta de volume russo, mas com aspecto natural. Mapping gatinho (fox eye). Olho direito lacrimeja um pouco."}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.historyHeader}>
-          <Text style={styles.sectionTitle}>Histórico de Agendamentos</Text>
-          <TouchableOpacity>
-            <Text style={styles.linkText}>Ver todos</Text>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <TouchableOpacity style={styles.headerButton} onPress={() => setShowForm(!showForm)}>
+            <Feather name={showForm ? "x" : "edit"} size={18} color={colors.black} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.headerButton} onPress={handleDelete}>
+            <Feather name="trash-2" size={18} color="#E0315D" />
           </TouchableOpacity>
         </View>
+      </View>
 
-        <View style={styles.timeline}>
-          <View style={styles.timelineLine} />
-
-          <View style={styles.timelineItem}>
-            <View style={styles.timelineDot} />
-            <View style={styles.historyCard}>
-              <View style={styles.historyCardHeader}>
-                <Text style={styles.historyDate}>15 Outubro 2023</Text>
-                <View style={[styles.statusTag, styles.statusSuccess]}>
-                  <Text style={[styles.statusText, styles.statusTextSuccess]}>Concluído</Text>
-                </View>
-              </View>
-              <Text style={styles.historyTitle}>Manutenção Volume Russo</Text>
-
-              <View style={styles.historyDetailRow}>
-                <Feather name="clock" size={12} color={colors.mutedText} />
-                <Text style={styles.historyDetailText}>14:00 - 15:30 (1h 30min)</Text>
-              </View>
-              <View style={styles.historyDetailRow}>
-                <Feather name="tag" size={12} color={colors.mutedText} />
-                <Text style={styles.historyDetailText}>R$ 120,00</Text>
-              </View>
-              <View style={styles.historyDetailRow}>
-                <Feather name="user" size={12} color={colors.mutedText} />
-                <Text style={styles.historyDetailText}>Profissional: Sandra Chiu</Text>
-              </View>
-
-              <View style={styles.historyNote}>
-                <Text style={styles.historyNoteText}>"Retenção excelente, perdeu apenas 30%. Usamos curvatura D, espessura 0.05."</Text>
-              </View>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+        {showForm ? (
+          <View style={styles.form}>
+            <Input
+              label="Nome *"
+              placeholder="Ex: Amanda Silva"
+              value={nome}
+              onChangeText={setNome}
+            />
+            <Input
+              label="Telefone"
+              placeholder="Ex: (11) 9 9999 9999"
+              value={telefone}
+              onChangeText={text => setTelefone(formatPhone(text))}
+              keyboardType="numeric"
+              maxLength={16}
+            />
+            <Input
+              label="E-mail"
+              placeholder="Ex: amanda@email.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <Input
+              label="Data de Nascimento"
+              placeholder="Ex: 2000-01-23"
+              value={dataNascimento}
+              onChangeText={text => setDataNascimento(formatDate(text))}
+              maxLength={10}
+            />
+            {/* <Input
+              label="Observações"
+              placeholder="Alergias, preferências, etc."
+              value={observacoes}
+              onChangeText={setObservacoes}
+              multiline={true}
+            /> */}
+            <View style={{ marginTop: 16 }}>
+              <Button title="Salvar alterações" onPress={handleSaveClient} />
             </View>
           </View>
+        ) : (
+          <>
+            <View style={styles.profileSection}>
+              <View style={styles.avatarContainer}>
+                <Image source={avatarSource} style={styles.avatar} />
+                {isVip && (
+                  <View style={styles.vipBadge}>
+                    <Text style={styles.vipText}>👑 VIP</Text>
+                  </View>
+                )}
+              </View>
+              <Text style={styles.clientName}>{clientName}</Text>
+              <Text style={styles.clientSince}>{clientSince}</Text>
 
-          <View style={styles.timelineItem}>
-            <View style={styles.timelineDot} />
-            <View style={styles.historyCard}>
-              <View style={styles.historyCardHeader}>
-                <Text style={styles.historyDate}>20 Setembro 2023</Text>
-                <View style={[styles.statusTag, styles.statusDefault]}>
-                  <Text style={[styles.statusText, styles.statusTextDefault]}>Concluído</Text>
-                </View>
-              </View>
-              <Text style={styles.historyTitle}>Manutenção Volume Russo</Text>
-              <View style={styles.historyDetailRow}>
-                <Feather name="clock" size={12} color={colors.mutedText} />
-                <Text style={styles.historyDetailText}>10:00 - 11:30 (1h 30min)</Text>
-              </View>
-              <View style={styles.historyDetailRow}>
-                <Feather name="tag" size={12} color={colors.mutedText} />
-                <Text style={styles.historyDetailText}>R$ 120,00</Text>
+              <View style={styles.actionButtons}>
+                <TouchableOpacity style={styles.actionButton}>
+                  <Feather name="message-circle" size={20} color="#25D366" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.actionButton}>
+                  <Feather name="phone" size={20} color={colors.roseGold} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.actionButton}>
+                  <Feather name="mail" size={20} color={colors.mutedText} />
+                </TouchableOpacity>
               </View>
             </View>
-          </View>
 
-          <View style={styles.timelineItem}>
-            <View style={styles.timelineDot} />
-            <View style={styles.historyCard}>
-              <View style={styles.historyCardHeader}>
-                <Text style={styles.historyDate}>25 Agosto 2023</Text>
-                <View style={[styles.statusTag, styles.statusDefault]}>
-                  <Text style={[styles.statusText, styles.statusTextDefault]}>Concluído</Text>
-                </View>
+            <View style={styles.statsContainer}>
+              <View style={styles.statCard}>
+                <Feather name="calendar" size={14} color={colors.roseGold} style={styles.statIcon} />
+                <Text style={styles.statLabel}>Total de Visitas</Text>
+                <Text style={styles.statValue}>12</Text>
               </View>
-              <Text style={styles.historyTitle}>Primeira Aplicação - Vol. Russo</Text>
-              <View style={styles.historyDetailRow}>
-                <Feather name="clock" size={12} color={colors.mutedText} />
-                <Text style={styles.historyDetailText}>14:00 - 16:30 (2h 30min)</Text>
+              <View style={styles.statCard}>
+                <Feather name="file-text" size={14} color={colors.roseGold} style={styles.statIcon} />
+                <Text style={styles.statLabel}>Ticket Médio</Text>
+                <Text style={styles.statValue}>R$ 185</Text>
               </View>
             </View>
-          </View>
-        </View>
 
-        <View style={{ height: 140 }} />
+            <View style={styles.sectionCard}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Observações</Text>
+                <TouchableOpacity>
+                  <Feather name="edit-2" size={16} color={colors.roseGold} />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.sectionContent}>
+                <Text style={styles.subTitle}>ALERGIAS</Text>
+                <View style={styles.tag}>
+                  <Text style={styles.tagText}>Fita Micropore</Text>
+                </View>
+                <Text style={[styles.subTitle, { marginTop: 16 }]}>PREFERÊNCIAS</Text>
+                <Text style={styles.bodyText}>
+                  {client.observacoes || "Gosta de volume russo, mas com aspecto natural. Mapping gatinho (fox eye). Olho direito lacrimeja um pouco."}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.historyHeader}>
+              <Text style={styles.sectionTitle}>Histórico de Agendamentos</Text>
+              <TouchableOpacity>
+                <Text style={styles.linkText}>Ver todos</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.timeline}>
+              <View style={styles.timelineLine} />
+
+              <View style={styles.timelineItem}>
+                <View style={styles.timelineDot} />
+                <View style={styles.historyCard}>
+                  <View style={styles.historyCardHeader}>
+                    <Text style={styles.historyDate}>15 Outubro 2023</Text>
+                    <View style={[styles.statusTag, styles.statusSuccess]}>
+                      <Text style={[styles.statusText, styles.statusTextSuccess]}>Concluído</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.historyTitle}>Manutenção Volume Russo</Text>
+
+                  <View style={styles.historyDetailRow}>
+                    <Feather name="clock" size={12} color={colors.mutedText} />
+                    <Text style={styles.historyDetailText}>14:00 - 15:30 (1h 30min)</Text>
+                  </View>
+                  <View style={styles.historyDetailRow}>
+                    <Feather name="tag" size={12} color={colors.mutedText} />
+                    <Text style={styles.historyDetailText}>R$ 120,00</Text>
+                  </View>
+                  <View style={styles.historyDetailRow}>
+                    <Feather name="user" size={12} color={colors.mutedText} />
+                    <Text style={styles.historyDetailText}>Profissional: Sandra Chiu</Text>
+                  </View>
+
+                  <View style={styles.historyNote}>
+                    <Text style={styles.historyNoteText}>"Retenção excelente, perdeu apenas 30%. Usamos curvatura D, espessura 0.05."</Text>
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.timelineItem}>
+                <View style={styles.timelineDot} />
+                <View style={styles.historyCard}>
+                  <View style={styles.historyCardHeader}>
+                    <Text style={styles.historyDate}>20 Setembro 2023</Text>
+                    <View style={[styles.statusTag, styles.statusDefault]}>
+                      <Text style={[styles.statusText, styles.statusTextDefault]}>Concluído</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.historyTitle}>Manutenção Volume Russo</Text>
+                  <View style={styles.historyDetailRow}>
+                    <Feather name="clock" size={12} color={colors.mutedText} />
+                    <Text style={styles.historyDetailText}>10:00 - 11:30 (1h 30min)</Text>
+                  </View>
+                  <View style={styles.historyDetailRow}>
+                    <Feather name="tag" size={12} color={colors.mutedText} />
+                    <Text style={styles.historyDetailText}>R$ 120,00</Text>
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.timelineItem}>
+                <View style={styles.timelineDot} />
+                <View style={styles.historyCard}>
+                  <View style={styles.historyCardHeader}>
+                    <Text style={styles.historyDate}>25 Agosto 2023</Text>
+                    <View style={[styles.statusTag, styles.statusDefault]}>
+                      <Text style={[styles.statusText, styles.statusTextDefault]}>Concluído</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.historyTitle}>Primeira Aplicação - Vol. Russo</Text>
+                  <View style={styles.historyDetailRow}>
+                    <Feather name="clock" size={12} color={colors.mutedText} />
+                    <Text style={styles.historyDetailText}>14:00 - 16:30 (2h 30min)</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            <View style={{ height: 140 }} />
+          </>
+        )}
       </ScrollView>
 
       <View style={styles.floatingButtonContainer}>
@@ -180,6 +374,14 @@ export default function ClientProfileScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  form: {
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#F0EBE6',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FCFAF8',
