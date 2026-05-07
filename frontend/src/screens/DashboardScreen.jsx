@@ -7,40 +7,6 @@ import Button from '../components/Button';
 import AutocompleteInput from '../components/AutocompleteInput';
 import { api } from '../services/api';
 
-const appointments = [
-  {
-    id: 1,
-    time: '09:00',
-    title: 'Volume Brasileiro',
-    client: 'Carolina Mendes',
-    status: 'CONCLUÍDO',
-    statusColor: '#999',
-    statusBg: '#F0F0F0',
-    borderColor: 'transparent',
-  },
-  {
-    id: 2,
-    time: '14:30',
-    title: 'Manutenção Clássico',
-    client: 'Mariana Silva',
-    status: 'CONFIRMADO',
-    statusColor: '#2E7D32',
-    statusBg: '#E8F5E9',
-    borderColor: colors.roseGold,
-    showButton: true,
-  },
-  {
-    id: 3,
-    time: '16:00',
-    title: 'Volume Russo',
-    client: 'Juliana Costa',
-    status: 'PENDENTE',
-    statusColor: '#F57F17',
-    statusBg: '#FFFDE7',
-    borderColor: '#FFC107',
-  },
-];
-
 export default function DashboardScreen({ route, navigation }) {
   const userName = route?.params?.userName;
   const [days, setDays] = useState([]);
@@ -53,6 +19,7 @@ export default function DashboardScreen({ route, navigation }) {
 
   const [clientes, setClientes] = useState([]);
   const [servicos, setServicos] = useState([]);
+  const [agendamentosGeral, setAgendamentosGeral] = useState([]);
 
   useEffect(() => {
     if (showForm) {
@@ -71,7 +38,18 @@ export default function DashboardScreen({ route, navigation }) {
     }
   }
 
+  async function fetchAgendamentos() {
+    try {
+      const data = await api.get('/Agendamento');
+      setAgendamentosGeral(data);
+    } catch (error) {
+      console.error('Erro ao buscar agendamentos:', error);
+    }
+  }
+
   useEffect(() => {
+    fetchAgendamentos();
+
     const weekDays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
     const generatedDays = [];
     const today = new Date();
@@ -174,12 +152,57 @@ export default function DashboardScreen({ route, navigation }) {
       Alert.alert('Sucesso', msg);
       if (typeof window !== 'undefined') window.alert(msg);
       resetForm();
+      fetchAgendamentos(); // recarrega a lista do backend
     } catch (error) {
       console.error('Caiu no catch do handleSaveAgendamento:', error);
       Alert.alert('Erro', error.message);
       if (typeof window !== 'undefined') window.alert(error.message);
     }
   }
+
+  const activeDay = days.find(d => d.active);
+
+  const filteredAppointments = agendamentosGeral.filter(a => {
+    if (!activeDay) return false;
+    const apptDate = new Date(a.dataHora);
+    return apptDate.getFullYear() === activeDay.fullDate.getFullYear() &&
+           apptDate.getMonth() === activeDay.fullDate.getMonth() &&
+           apptDate.getDate() === activeDay.fullDate.getDate();
+  }).map(a => {
+    const apptDate = new Date(a.dataHora);
+    const timeString = `${String(apptDate.getHours()).padStart(2, '0')}:${String(apptDate.getMinutes()).padStart(2, '0')}`;
+    
+    let statusString = 'AGENDADO';
+    let statusColor = '#2E7D32'; 
+    let statusBg = '#E8F5E9';
+    let borderColor = colors.roseGold;
+
+    if (a.status === 1) { // Realizado
+      statusString = 'REALIZADO';
+      statusColor = '#999';
+      statusBg = '#F0F0F0';
+      borderColor = 'transparent';
+    } else if (a.status === 2) { // Cancelado
+      statusString = 'CANCELADO';
+      statusColor = '#D32F2F';
+      statusBg = '#FFEBEE';
+      borderColor = '#D32F2F';
+    } else if (a.status === 0) { // Agendado
+      statusString = 'CONFIRMADO';
+    }
+
+    return {
+      id: a.id,
+      time: timeString,
+      title: a.servico ? a.servico.nome : 'Sem Serviço',
+      client: a.cliente ? a.cliente.nome : 'Sem Cliente',
+      status: statusString,
+      statusColor,
+      statusBg,
+      borderColor,
+      showButton: a.status === 0,
+    };
+  });
 
   return (
     <View style={styles.mainContainer}>
@@ -289,28 +312,32 @@ export default function DashboardScreen({ route, navigation }) {
           </View>
         ) : (
           <View style={styles.agendaList}>
-            {appointments.map((apt) => (
-              <View key={apt.id} style={styles.appointmentRow}>
-                <Text style={styles.appointmentTime}>{apt.time}</Text>
-                <View style={[styles.appointmentCard, { borderLeftColor: apt.borderColor, borderLeftWidth: apt.borderColor !== 'transparent' ? 4 : 0 }]}>
-                  <View style={styles.appointmentCardHeader}>
-                    <Text style={styles.appointmentTitle}>{apt.title}</Text>
-                    <View style={[styles.statusBadge, { backgroundColor: apt.statusBg }]}>
-                      <Text style={[styles.statusText, { color: apt.statusColor }]}>{apt.status}</Text>
+            {filteredAppointments.length === 0 ? (
+              <Text style={{ textAlign: 'center', marginTop: 20, color: colors.mutedText }}>Nenhum agendamento para este dia.</Text>
+            ) : (
+              filteredAppointments.map((apt) => (
+                <View key={apt.id} style={styles.appointmentRow}>
+                  <Text style={styles.appointmentTime}>{apt.time}</Text>
+                  <View style={[styles.appointmentCard, { borderLeftColor: apt.borderColor, borderLeftWidth: apt.borderColor !== 'transparent' ? 4 : 0 }]}>
+                    <View style={styles.appointmentCardHeader}>
+                      <Text style={styles.appointmentTitle}>{apt.title}</Text>
+                      <View style={[styles.statusBadge, { backgroundColor: apt.statusBg }]}>
+                        <Text style={[styles.statusText, { color: apt.statusColor }]}>{apt.status}</Text>
+                      </View>
                     </View>
+                    <Text style={styles.appointmentClient}>{apt.client}</Text>
+                    {apt.showButton && (
+                      <View style={styles.appointmentActions}>
+                        <TouchableOpacity style={styles.startButton}>
+                          <Text style={styles.startButtonText}>Iniciar</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.actionSquare} />
+                      </View>
+                    )}
                   </View>
-                  <Text style={styles.appointmentClient}>{apt.client}</Text>
-                  {apt.showButton && (
-                    <View style={styles.appointmentActions}>
-                      <TouchableOpacity style={styles.startButton}>
-                        <Text style={styles.startButtonText}>Iniciar</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.actionSquare} />
-                    </View>
-                  )}
                 </View>
-              </View>
-            ))}
+              ))
+            )}
           </View>
         )}
         <View style={{ height: 100 }} />
