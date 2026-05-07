@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } from 'react-native';
 import { colors } from '../theme/colors';
 import BottomMenu from '../components/BottomMenu';
+import Input from '../components/Input';
+import Button from '../components/Button';
+import { api } from '../services/api';
 
 const appointments = [
   {
@@ -40,6 +43,12 @@ const appointments = [
 export default function DashboardScreen({ route, navigation }) {
   const userName = route?.params?.userName;
   const [days, setDays] = useState([]);
+  
+  const [showForm, setShowForm] = useState(false);
+  const [clienteId, setClienteId] = useState('');
+  const [servicoId, setServicoId] = useState('');
+  const [dataHora, setDataHora] = useState('');
+  const [observacoes, setObservacoes] = useState('');
 
   useEffect(() => {
     const weekDays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
@@ -72,6 +81,83 @@ export default function DashboardScreen({ route, navigation }) {
 
   function handleLogout() {
     navigation.replace('Login');
+  }
+
+  function resetForm() {
+    setClienteId('');
+    setServicoId('');
+    setDataHora('');
+    setObservacoes('');
+    setShowForm(false);
+  }
+
+  const formatDateTime = (value) => {
+    let v = value.replace(/\D/g, '');
+    if (v.length > 12) v = v.substring(0, 12);
+    
+    if (v.length === 0) return '';
+    if (v.length <= 2) return v;
+    if (v.length <= 4) return `${v.substring(0, 2)}/${v.substring(2)}`;
+    if (v.length <= 8) return `${v.substring(0, 2)}/${v.substring(2, 4)}/${v.substring(4)}`;
+    if (v.length <= 10) return `${v.substring(0, 2)}/${v.substring(2, 4)}/${v.substring(4, 8)} ${v.substring(8)}`;
+    return `${v.substring(0, 2)}/${v.substring(2, 4)}/${v.substring(4, 8)} ${v.substring(8, 10)}:${v.substring(10)}`;
+  };
+
+  async function handleSaveAgendamento() {
+    console.log('--- Iniciando handleSaveAgendamento ---');
+    console.log('Campos:', { clienteId, servicoId, dataHora });
+
+    if (!clienteId || !servicoId || !dataHora) {
+      console.warn('Falhou na validação de campos obrigatórios');
+      const msg = 'Preencha os campos obrigatórios (Cliente, Serviço e Data/Hora).';
+      Alert.alert('Atenção', msg);
+      if (typeof window !== 'undefined') window.alert(msg);
+      return;
+    }
+
+    const dateTimeRegex = /^\d{2}\/\d{2}\/\d{4}( \d{2}:\d{2})?$/;
+    if (!dateTimeRegex.test(dataHora)) {
+      console.warn('Falhou na validação do regex da dataHora:', dataHora);
+      const msg = 'A data deve estar no formato DD/MM/AAAA ou DD/MM/AAAA HH:MM';
+      Alert.alert('Atenção', msg);
+      if (typeof window !== 'undefined') window.alert(msg);
+      return;
+    }
+
+    try {
+      let formattedDate;
+      if (dataHora.includes(' ')) {
+        const [datePart, timePart] = dataHora.split(' ');
+        const [day, month, year] = datePart.split('/');
+        formattedDate = `${year}-${month}-${day}T${timePart}:00`;
+      } else {
+        const [day, month, year] = dataHora.split('/');
+        formattedDate = `${year}-${month}-${day}T00:00:00`;
+      }
+
+      const payload = {
+        clienteId: Number(clienteId),
+        servicoId: Number(servicoId),
+        usuarioId: 1, // ID fixo temporário ou pegaria do token/usuário logado
+        dataHora: formattedDate,
+        observacoes,
+        status: 0
+      };
+
+      console.log('Payload que será enviado para a API:', payload);
+
+      const response = await api.post('/Agendamento', payload);
+      console.log('Resposta da API:', response);
+      
+      const msg = 'Agendamento criado com sucesso!';
+      Alert.alert('Sucesso', msg);
+      if (typeof window !== 'undefined') window.alert(msg);
+      resetForm();
+    } catch (error) {
+      console.error('Caiu no catch do handleSaveAgendamento:', error);
+      Alert.alert('Erro', error.message);
+      if (typeof window !== 'undefined') window.alert(error.message);
+    }
   }
 
   return (
@@ -148,30 +234,50 @@ export default function DashboardScreen({ route, navigation }) {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.agendaList}>
-          {appointments.map((apt) => (
-            <View key={apt.id} style={styles.appointmentRow}>
-              <Text style={styles.appointmentTime}>{apt.time}</Text>
-              <View style={[styles.appointmentCard, { borderLeftColor: apt.borderColor, borderLeftWidth: apt.borderColor !== 'transparent' ? 4 : 0 }]}>
-                <View style={styles.appointmentCardHeader}>
-                  <Text style={styles.appointmentTitle}>{apt.title}</Text>
-                  <View style={[styles.statusBadge, { backgroundColor: apt.statusBg }]}>
-                    <Text style={[styles.statusText, { color: apt.statusColor }]}>{apt.status}</Text>
+        {!showForm && (
+          <View style={styles.actionRow}>
+            <TouchableOpacity style={styles.newAppointmentButton} onPress={() => setShowForm(true)}>
+              <Text style={styles.newAppointmentButtonText}>+ Novo agendamento</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {showForm ? (
+          <View style={styles.formContainer}>
+            <Input label="ID do Cliente" value={clienteId} onChangeText={setClienteId} keyboardType="numeric" placeholder="Ex: 1" />
+            <Input label="ID do Serviço" value={servicoId} onChangeText={setServicoId} keyboardType="numeric" placeholder="Ex: 1" />
+            <Input label="Data e Hora" value={dataHora} onChangeText={(text) => setDataHora(formatDateTime(text))} placeholder="DD/MM/AAAA HH:MM" keyboardType="numeric" maxLength={16} />
+            <Input label="Observações" value={observacoes} onChangeText={setObservacoes} placeholder="Opcional" multiline />
+            <Button title="Salvar Agendamento" onPress={handleSaveAgendamento} />
+            <View style={{ height: 16 }} />
+            <Button title="Cancelar" onPress={resetForm} />
+          </View>
+        ) : (
+          <View style={styles.agendaList}>
+            {appointments.map((apt) => (
+              <View key={apt.id} style={styles.appointmentRow}>
+                <Text style={styles.appointmentTime}>{apt.time}</Text>
+                <View style={[styles.appointmentCard, { borderLeftColor: apt.borderColor, borderLeftWidth: apt.borderColor !== 'transparent' ? 4 : 0 }]}>
+                  <View style={styles.appointmentCardHeader}>
+                    <Text style={styles.appointmentTitle}>{apt.title}</Text>
+                    <View style={[styles.statusBadge, { backgroundColor: apt.statusBg }]}>
+                      <Text style={[styles.statusText, { color: apt.statusColor }]}>{apt.status}</Text>
+                    </View>
                   </View>
+                  <Text style={styles.appointmentClient}>{apt.client}</Text>
+                  {apt.showButton && (
+                    <View style={styles.appointmentActions}>
+                      <TouchableOpacity style={styles.startButton}>
+                        <Text style={styles.startButtonText}>Iniciar</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.actionSquare} />
+                    </View>
+                  )}
                 </View>
-                <Text style={styles.appointmentClient}>{apt.client}</Text>
-                {apt.showButton && (
-                  <View style={styles.appointmentActions}>
-                    <TouchableOpacity style={styles.startButton}>
-                      <Text style={styles.startButtonText}>Iniciar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.actionSquare} />
-                  </View>
-                )}
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        )}
         <View style={{ height: 100 }} />
       </ScrollView>
       <BottomMenu active="Dashboard" navigation={navigation} />
@@ -391,6 +497,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.roseGold,
     fontWeight: '600',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: 20,
+  },
+  newAppointmentButton: {
+    backgroundColor: colors.black,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  newAppointmentButtonText: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  formContainer: {
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
   agendaList: {
     gap: 20,

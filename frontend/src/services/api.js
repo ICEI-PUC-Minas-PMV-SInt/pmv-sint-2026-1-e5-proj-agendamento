@@ -27,11 +27,23 @@ async function request(path, options = {}) {
   }
 
   if (!response.ok) {
-    const backendMessage = typeof data === 'object' && data !== null 
-      ? (data.message || data.title || JSON.stringify(data)) 
-      : data;
+    let backendMessage = 'Erro desconhecido';
+    
+    if (typeof data === 'object' && data !== null) {
+      if (data.errors) {
+        // Formata os erros do ASP.NET Core: "Campo: Erro 1, Erro 2"
+        backendMessage = Object.entries(data.errors)
+          .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+          .join('\n');
+      } else {
+        backendMessage = data.message || data.title || JSON.stringify(data);
+      }
+    } else {
+      backendMessage = data;
+    }
+
     const errorMessage = backendMessage ? `[HTTP ${response.status}] ${backendMessage}` : `Erro HTTP ${response.status}`;
-    console.error('API Error:', { path, status: response.status, backendMessage });
+    console.error('API Error:', { path, status: response.status, backendMessage, originalData: data });
     throw new Error(errorMessage);
   }
 

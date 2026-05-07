@@ -15,15 +15,15 @@ public class Agendamento
 
     // FK Cliente
     public int ClienteId { get; set; }
-    public Cliente Cliente { get; set; } = null!;
+    public Cliente? Cliente { get; set; }
 
     // FK Serviço
     public int ServicoId { get; set; }
-    public Servico Servico { get; set; } = null!;
+    public Servico? Servico { get; set; }
 
     // FK Usuário (profissional que realizou)
     public int UsuarioId { get; set; }
-    public Usuario Usuario { get; set; } = null!;
+    public Usuario? Usuario { get; set; }
 
     [Required]
     public DateTime DataHora { get; set; }
