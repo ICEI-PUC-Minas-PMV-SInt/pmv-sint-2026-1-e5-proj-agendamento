@@ -4,6 +4,7 @@ import { colors } from '../theme/colors';
 import BottomMenu from '../components/BottomMenu';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import AutocompleteInput from '../components/AutocompleteInput';
 import { api } from '../services/api';
 
 const appointments = [
@@ -45,10 +46,30 @@ export default function DashboardScreen({ route, navigation }) {
   const [days, setDays] = useState([]);
   
   const [showForm, setShowForm] = useState(false);
-  const [clienteId, setClienteId] = useState('');
-  const [servicoId, setServicoId] = useState('');
+  const [selectedCliente, setSelectedCliente] = useState(null);
+  const [selectedServico, setSelectedServico] = useState(null);
   const [dataHora, setDataHora] = useState('');
   const [observacoes, setObservacoes] = useState('');
+
+  const [clientes, setClientes] = useState([]);
+  const [servicos, setServicos] = useState([]);
+
+  useEffect(() => {
+    if (showForm) {
+      loadData();
+    }
+  }, [showForm]);
+
+  async function loadData() {
+    try {
+      const clientesData = await api.get('/Cliente');
+      setClientes(clientesData);
+      const servicosData = await api.get('/Servico');
+      setServicos(servicosData);
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+    }
+  }
 
   useEffect(() => {
     const weekDays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
@@ -84,8 +105,8 @@ export default function DashboardScreen({ route, navigation }) {
   }
 
   function resetForm() {
-    setClienteId('');
-    setServicoId('');
+    setSelectedCliente(null);
+    setSelectedServico(null);
     setDataHora('');
     setObservacoes('');
     setShowForm(false);
@@ -105,9 +126,9 @@ export default function DashboardScreen({ route, navigation }) {
 
   async function handleSaveAgendamento() {
     console.log('--- Iniciando handleSaveAgendamento ---');
-    console.log('Campos:', { clienteId, servicoId, dataHora });
+    console.log('Campos:', { selectedCliente, selectedServico, dataHora });
 
-    if (!clienteId || !servicoId || !dataHora) {
+    if (!selectedCliente || !selectedServico || !dataHora) {
       console.warn('Falhou na validação de campos obrigatórios');
       const msg = 'Preencha os campos obrigatórios (Cliente, Serviço e Data/Hora).';
       Alert.alert('Atenção', msg);
@@ -136,8 +157,8 @@ export default function DashboardScreen({ route, navigation }) {
       }
 
       const payload = {
-        clienteId: Number(clienteId),
-        servicoId: Number(servicoId),
+        clienteId: selectedCliente.id,
+        servicoId: selectedServico.id,
         usuarioId: 1, // ID fixo temporário ou pegaria do token/usuário logado
         dataHora: formattedDate,
         observacoes,
@@ -244,9 +265,23 @@ export default function DashboardScreen({ route, navigation }) {
 
         {showForm ? (
           <View style={styles.formContainer}>
-            <Input label="ID do Cliente" value={clienteId} onChangeText={setClienteId} keyboardType="numeric" placeholder="Ex: 1" />
-            <Input label="ID do Serviço" value={servicoId} onChangeText={setServicoId} keyboardType="numeric" placeholder="Ex: 1" />
-            <Input label="Data e Hora" value={dataHora} onChangeText={(text) => setDataHora(formatDateTime(text))} placeholder="DD/MM/AAAA HH:MM" keyboardType="numeric" maxLength={16} />
+            <AutocompleteInput 
+              label="Cliente *" 
+              placeholder="Digite o nome do cliente..." 
+              data={clientes} 
+              searchKey="nome" 
+              value={selectedCliente ? selectedCliente.nome : ''} 
+              onSelect={setSelectedCliente} 
+            />
+            <AutocompleteInput 
+              label="Serviço *" 
+              placeholder="Digite o nome do serviço..." 
+              data={servicos} 
+              searchKey="nome" 
+              value={selectedServico ? selectedServico.nome : ''} 
+              onSelect={setSelectedServico} 
+            />
+            <Input label="Data e Hora *" value={dataHora} onChangeText={(text) => setDataHora(formatDateTime(text))} placeholder="DD/MM/AAAA HH:MM" keyboardType="numeric" maxLength={16} />
             <Input label="Observações" value={observacoes} onChangeText={setObservacoes} placeholder="Opcional" multiline />
             <Button title="Salvar Agendamento" onPress={handleSaveAgendamento} />
             <View style={{ height: 16 }} />
