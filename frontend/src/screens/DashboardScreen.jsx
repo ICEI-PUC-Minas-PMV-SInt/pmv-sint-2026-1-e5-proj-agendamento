@@ -10,7 +10,7 @@ import { api } from '../services/api';
 export default function DashboardScreen({ route, navigation }) {
   const userName = route?.params?.userName;
   const [days, setDays] = useState([]);
-  
+
   const [showForm, setShowForm] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState(null);
   const [selectedServico, setSelectedServico] = useState(null);
@@ -93,7 +93,7 @@ export default function DashboardScreen({ route, navigation }) {
   const formatDateTime = (value) => {
     let v = value.replace(/\D/g, '');
     if (v.length > 12) v = v.substring(0, 12);
-    
+
     if (v.length === 0) return '';
     if (v.length <= 2) return v;
     if (v.length <= 4) return `${v.substring(0, 2)}/${v.substring(2)}`;
@@ -147,7 +147,7 @@ export default function DashboardScreen({ route, navigation }) {
 
       const response = await api.post('/Agendamento', payload);
       console.log('Resposta da API:', response);
-      
+
       const msg = 'Agendamento criado com sucesso!';
       Alert.alert('Sucesso', msg);
       if (typeof window !== 'undefined') window.alert(msg);
@@ -166,14 +166,14 @@ export default function DashboardScreen({ route, navigation }) {
     if (!activeDay) return false;
     const apptDate = new Date(a.dataHora);
     return apptDate.getFullYear() === activeDay.fullDate.getFullYear() &&
-           apptDate.getMonth() === activeDay.fullDate.getMonth() &&
-           apptDate.getDate() === activeDay.fullDate.getDate();
+      apptDate.getMonth() === activeDay.fullDate.getMonth() &&
+      apptDate.getDate() === activeDay.fullDate.getDate();
   }).map(a => {
     const apptDate = new Date(a.dataHora);
     const timeString = `${String(apptDate.getHours()).padStart(2, '0')}:${String(apptDate.getMinutes()).padStart(2, '0')}`;
-    
+
     let statusString = 'AGENDADO';
-    let statusColor = '#2E7D32'; 
+    let statusColor = '#2E7D32';
     let statusBg = '#E8F5E9';
     let borderColor = colors.roseGold;
 
@@ -203,6 +203,18 @@ export default function DashboardScreen({ route, navigation }) {
       showButton: a.status === 0,
     };
   });
+
+  const now = new Date();
+
+  const futureAppointments = agendamentosGeral
+    .filter(a => a.status === 0 && new Date(a.dataHora) > now)
+    .sort((a, b) => new Date(a.dataHora) - new Date(b.dataHora));
+
+  const proximo = futureAppointments[0] || null;
+  const proximoTime = proximo
+    ? `${String(new Date(proximo.dataHora).getHours()).padStart(2, '0')}:${String(new Date(proximo.dataHora).getMinutes()).padStart(2, '0')}`
+    : '--:--';
+  const proximoServico = proximo && proximo.servico ? proximo.servico.nome : 'Nenhum agendamento';
 
   return (
     <View style={styles.mainContainer}>
@@ -241,10 +253,12 @@ export default function DashboardScreen({ route, navigation }) {
         <View style={styles.summaryContainer}>
           <View style={styles.summaryCard}>
             <Text style={styles.summaryTitle}>PRÓXIMO</Text>
-            <Text style={styles.summaryValue}>14:30</Text>
+            <Text style={styles.summaryValue}>{proximoTime}</Text>
             <View style={styles.summaryRow}>
-              <View style={styles.blackCircle} />
-              <Text style={styles.summarySubtitle}>Manutenção</Text>
+              <View style={[styles.blackCircle, !proximo && { backgroundColor: '#CCC' }]} />
+              <Text style={styles.summarySubtitle} numberOfLines={1} ellipsizeMode="tail">
+                {proximoServico}
+              </Text>
             </View>
           </View>
           <View style={styles.summaryCard}>
@@ -288,21 +302,21 @@ export default function DashboardScreen({ route, navigation }) {
 
         {showForm ? (
           <View style={styles.formContainer}>
-            <AutocompleteInput 
-              label="Cliente *" 
-              placeholder="Digite o nome do cliente..." 
-              data={clientes} 
-              searchKey="nome" 
-              value={selectedCliente ? selectedCliente.nome : ''} 
-              onSelect={setSelectedCliente} 
+            <AutocompleteInput
+              label="Cliente *"
+              placeholder="Digite o nome do cliente..."
+              data={clientes}
+              searchKey="nome"
+              value={selectedCliente ? selectedCliente.nome : ''}
+              onSelect={setSelectedCliente}
             />
-            <AutocompleteInput 
-              label="Serviço *" 
-              placeholder="Digite o nome do serviço..." 
-              data={servicos} 
-              searchKey="nome" 
-              value={selectedServico ? selectedServico.nome : ''} 
-              onSelect={setSelectedServico} 
+            <AutocompleteInput
+              label="Serviço *"
+              placeholder="Digite o nome do serviço..."
+              data={servicos}
+              searchKey="nome"
+              value={selectedServico ? selectedServico.nome : ''}
+              onSelect={setSelectedServico}
             />
             <Input label="Data e Hora *" value={dataHora} onChangeText={(text) => setDataHora(formatDateTime(text))} placeholder="DD/MM/AAAA HH:MM" keyboardType="numeric" maxLength={16} />
             <Input label="Observações" value={observacoes} onChangeText={setObservacoes} placeholder="Opcional" multiline />
