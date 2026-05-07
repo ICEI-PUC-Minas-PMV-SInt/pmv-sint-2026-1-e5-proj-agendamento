@@ -216,6 +216,33 @@ export default function DashboardScreen({ route, navigation }) {
     : '--:--';
   const proximoServico = proximo && proximo.servico ? proximo.servico.nome : 'Nenhum agendamento';
 
+  const dayOfWeek = now.getDay() || 7; // Domingo vira 7
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - (dayOfWeek - 1));
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const weekIntervalText = `${String(startOfWeek.getDate()).padStart(2, '0')} a ${String(endOfWeek.getDate()).padStart(2, '0')} de ${meses[endOfWeek.getMonth()]}`;
+
+  const weekAppointments = agendamentosGeral.filter(a => {
+    if (a.status === 2) return false; // Ignora cancelados
+    const d = new Date(a.dataHora);
+    return d >= startOfWeek && d <= endOfWeek;
+  });
+
+  const weekCount = weekAppointments.length;
+  const weekRevenue = weekAppointments.reduce((sum, a) => {
+    return sum + (a.servico && a.servico.preco ? Number(a.servico.preco) : 0);
+  }, 0);
+
+  const formattedRevenue = weekRevenue >= 1000
+    ? `R$ ${(weekRevenue / 1000).toFixed(1)}k prev.`
+    : `R$ ${weekRevenue.toFixed(2).replace('.', ',')} prev.`;
+
   return (
     <View style={styles.mainContainer}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -263,14 +290,15 @@ export default function DashboardScreen({ route, navigation }) {
           </View>
           <View style={styles.summaryCard}>
             <Text style={styles.summaryTitle}>NA SEMANA</Text>
+            <Text style={styles.summaryWeekInterval}>{weekIntervalText}</Text>
             <View style={styles.summaryRowValue}>
-              <Text style={styles.summaryValue}>24</Text>
+              <Text style={styles.summaryValue}>{weekCount}</Text>
               <Text style={styles.summarySubtitleWeek}> agend.</Text>
             </View>
             <View style={styles.progressBarBg}>
-              <View style={styles.progressBarFill} />
+              <View style={[styles.progressBarFill, { width: weekCount > 0 ? '70%' : '0%' }]} />
             </View>
-            <Text style={styles.revenueText}>R$ 3.2k prev.</Text>
+            <Text style={styles.revenueText}>{formattedRevenue}</Text>
           </View>
         </View>
 
@@ -468,6 +496,12 @@ const styles = StyleSheet.create({
     color: colors.mutedText,
     fontWeight: 'bold',
     marginBottom: 10,
+  },
+  summaryWeekInterval: {
+    fontSize: 10,
+    color: colors.mutedText,
+    marginTop: -8,
+    marginBottom: 8,
   },
   summaryValue: {
     fontSize: 28,
