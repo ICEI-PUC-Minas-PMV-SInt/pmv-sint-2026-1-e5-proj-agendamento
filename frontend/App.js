@@ -1,58 +1,21 @@
-import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts, BodoniModa_400Regular, BodoniModa_700Bold } from '@expo-google-fonts/bodoni-moda';
 
-import LoginScreen from './src/screens/LoginScreen';
-import DashboardScreen from './src/screens/DashboardScreen';
-import ServicesScreen from './src/screens/ServicesScreen';
-import ClientsScreen from './src/screens/ClientsScreen';
-import ClientProfileScreen from './src/screens/ClientProfileScreen';
-
-const Stack = createNativeStackNavigator();
+import { AuthProvider } from './src/contexts/AuthContext';
+import RootNavigator from './src/navigation/RootNavigator';
 
 export default function App() {
-    const [initialRoute, setInitialRoute] = useState(null);
-    const [fontsLoaded] = useFonts({
-        BodoniModa_400Regular,
-        BodoniModa_700Bold,
-    });
+  const [fontsLoaded] = useFonts({
+    BodoniModa_400Regular,
+    BodoniModa_700Bold,
+  });
 
-    useEffect(() => {
-        async function verificarLogin() {
-            const token = await AsyncStorage.getItem('token');
+  if (!fontsLoaded) return null;
 
-            if (token) {
-                setInitialRoute('Services');
-            } else {
-                setInitialRoute('Login');
-            }
-        }
-
-        verificarLogin();
-    }, []);
-
-    if (!initialRoute || !fontsLoaded) {
-        return null;
-    }
-
-    return (
-        <NavigationContainer>
-            <Stack.Navigator
-                initialRouteName={initialRoute}
-                screenOptions={{ headerShown: false }}
-            >
-                <Stack.Screen name="Login" component={LoginScreen} />
-                <Stack.Screen name="Services" component={ServicesScreen} />
-                <Stack.Screen name="Dashboard" component={DashboardScreen} />
-                <Stack.Screen name="Clientes" component={ClientsScreen} />
-                <Stack.Screen name="ClientProfile" component={ClientProfileScreen} />
-            </Stack.Navigator>
-
-            <StatusBar style="auto" />
-        </NavigationContainer>
-    );
+  return (
+    <AuthProvider>
+      <RootNavigator />
+      <StatusBar style="auto" />
+    </AuthProvider>
+  );
 }

@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors } from '../theme/colors';
 import BottomMenu from '../components/BottomMenu';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import AutocompleteInput from '../components/AutocompleteInput';
 import { api } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import { validateAgendamento } from '../utils/validators';
 
 export default function DashboardScreen({ route, navigation }) {
-  const userName = route?.params?.userName;
+  const { usuario, signOut } = useAuth();
+  const userName = usuario?.nome || '';
   const [days, setDays] = useState([]);
 
   const [showForm, setShowForm] = useState(false);
@@ -16,6 +20,7 @@ export default function DashboardScreen({ route, navigation }) {
   const [selectedServico, setSelectedServico] = useState(null);
   const [dataHora, setDataHora] = useState('');
   const [observacoes, setObservacoes] = useState('');
+  const [formErrors, setFormErrors] = useState({});
 
   const [clientes, setClientes] = useState([]);
   const [servicos, setServicos] = useState([]);
@@ -26,6 +31,26 @@ export default function DashboardScreen({ route, navigation }) {
       loadData();
     }
   }, [showForm]);
+
+  // Quando outra tela navegar com preselectClienteId, abre o form ja pre-selecionado
+  useEffect(() => {
+    const preId = route?.params?.preselectClienteId;
+    if (!preId) return;
+    (async () => {
+      try {
+        const clientesData = await api.get('/Cliente');
+        setClientes(clientesData);
+        const servicosData = await api.get('/Servico');
+        setServicos(servicosData);
+        const found = clientesData.find((c) => c.id === preId);
+        if (found) setSelectedCliente(found);
+        setShowForm(true);
+        navigation.setParams({ preselectClienteId: undefined });
+      } catch (e) {
+        console.error('Erro ao carregar dados pre-selecao:', e);
+      }
+    })();
+  }, [route?.params?.preselectClienteId]);
 
   async function loadData() {
     try {
@@ -47,9 +72,13 @@ export default function DashboardScreen({ route, navigation }) {
     }
   }
 
-  useEffect(() => {
-    fetchAgendamentos();
+  useFocusEffect(
+    useCallback(() => {
+      fetchAgendamentos();
+    }, [])
+  );
 
+  useEffect(() => {
     const weekDays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
     const generatedDays = [];
     const today = new Date();
@@ -78,8 +107,8 @@ export default function DashboardScreen({ route, navigation }) {
     );
   }
 
-  function handleLogout() {
-    navigation.replace('Login');
+  async function handleLogout() {
+    await signOut();
   }
 
   function resetForm() {
@@ -87,6 +116,7 @@ export default function DashboardScreen({ route, navigation }) {
     setSelectedServico(null);
     setDataHora('');
     setObservacoes('');
+    setFormErrors({});
     setShowForm(false);
   }
 
@@ -103,58 +133,42 @@ export default function DashboardScreen({ route, navigation }) {
   };
 
   async function handleSaveAgendamento() {
-    console.log('--- Iniciando handleSaveAgendamento ---');
-    console.log('Campos:', { selectedCliente, selectedServico, dataHora });
+    const horariosOcupados = agendamentosGeral
+      .filter((a) => a.status === 0)
+      .map((a) => a.dataHora);
 
-    if (!selectedCliente || !selectedServico || !dataHora) {
-      console.warn('Falhou na validação de campos obrigatórios');
-      const msg = 'Preencha os campos obrigatórios (Cliente, Serviço e Data/Hora).';
-      Alert.alert('Atenção', msg);
-      if (typeof window !== 'undefined') window.alert(msg);
+    const result = validateAgendamento({
+      cliente: selectedCliente,
+      servico: selectedServico,
+      dataHora,
+      horariosOcupados,
+    });
+
+    if (!result.ok) {
+      setFormErrors(result.errors);
       return;
     }
+    setFormErrors({});
 
-    const dateTimeRegex = /^\d{2}\/\d{2}\/\d{4}( \d{2}:\d{2})?$/;
-    if (!dateTimeRegex.test(dataHora)) {
-      console.warn('Falhou na validação do regex da dataHora:', dataHora);
-      const msg = 'A data deve estar no formato DD/MM/AAAA ou DD/MM/AAAA HH:MM';
-      Alert.alert('Atenção', msg);
-      if (typeof window !== 'undefined') window.alert(msg);
-      return;
-    }
+    const dt = result.parsedDate;
+    const formattedDate = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
 
     try {
-      let formattedDate;
-      if (dataHora.includes(' ')) {
-        const [datePart, timePart] = dataHora.split(' ');
-        const [day, month, year] = datePart.split('/');
-        formattedDate = `${year}-${month}-${day}T${timePart}:00`;
-      } else {
-        const [day, month, year] = dataHora.split('/');
-        formattedDate = `${year}-${month}-${day}T00:00:00`;
-      }
-
       const payload = {
         clienteId: selectedCliente.id,
         servicoId: selectedServico.id,
-        usuarioId: 1, // ID fixo temporário ou pegaria do token/usuário logado
         dataHora: formattedDate,
         observacoes,
         status: 0
       };
-
-      console.log('Payload que será enviado para a API:', payload);
-
-      const response = await api.post('/Agendamento', payload);
-      console.log('Resposta da API:', response);
-
-      const msg = 'Agendamento criado com sucesso!';
-      Alert.alert('Sucesso', msg);
-      if (typeof window !== 'undefined') window.alert(msg);
+      await api.post('/Agendamento', payload);
       resetForm();
-      fetchAgendamentos(); // recarrega a lista do backend
+      fetchAgendamentos();
     } catch (error) {
-      console.error('Caiu no catch do handleSaveAgendamento:', error);
+      if (error.status === 409) {
+        setFormErrors({ dataHora: 'Já existe um agendamento neste horário.' });
+        return;
+      }
       Alert.alert('Erro', error.message);
       if (typeof window !== 'undefined') window.alert(error.message);
     }
@@ -302,21 +316,10 @@ export default function DashboardScreen({ route, navigation }) {
           </View>
         </View>
 
-        <View style={styles.pendingCard}>
-          <View style={styles.pendingLeft}>
-            <View style={styles.pendingCircleLeft} />
-            <View>
-              <Text style={styles.pendingTitle}>Pendentes</Text>
-              <Text style={styles.pendingSubtitle}>3 aguardando confirmação</Text>
-            </View>
-          </View>
-          <View style={styles.pendingCircleRight} />
-        </View>
-
         <View style={styles.agendaHeader}>
           <Text style={styles.agendaTitle}>AGENDA DO DIA</Text>
-          <TouchableOpacity>
-            <Text style={styles.filtersText}>Filtros</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Agendamentos')}>
+            <Text style={styles.filtersText}>Ver todos</Text>
           </TouchableOpacity>
         </View>
 
@@ -336,17 +339,27 @@ export default function DashboardScreen({ route, navigation }) {
               data={clientes}
               searchKey="nome"
               value={selectedCliente ? selectedCliente.nome : ''}
-              onSelect={setSelectedCliente}
+              onSelect={(c) => { setSelectedCliente(c); setFormErrors((p) => ({ ...p, cliente: null })); }}
             />
+            {formErrors.cliente ? <Text style={styles.fieldError}>{formErrors.cliente}</Text> : null}
             <AutocompleteInput
               label="Serviço *"
               placeholder="Digite o nome do serviço..."
               data={servicos}
               searchKey="nome"
               value={selectedServico ? selectedServico.nome : ''}
-              onSelect={setSelectedServico}
+              onSelect={(s) => { setSelectedServico(s); setFormErrors((p) => ({ ...p, servico: null })); }}
             />
-            <Input label="Data e Hora *" value={dataHora} onChangeText={(text) => setDataHora(formatDateTime(text))} placeholder="DD/MM/AAAA HH:MM" keyboardType="numeric" maxLength={16} />
+            {formErrors.servico ? <Text style={styles.fieldError}>{formErrors.servico}</Text> : null}
+            <Input
+              label="Data e Hora *"
+              value={dataHora}
+              onChangeText={(text) => { setDataHora(formatDateTime(text)); setFormErrors((p) => ({ ...p, dataHora: null })); }}
+              placeholder="DD/MM/AAAA HH:MM"
+              keyboardType="numeric"
+              maxLength={16}
+              error={formErrors.dataHora}
+            />
             <Input label="Observações" value={observacoes} onChangeText={setObservacoes} placeholder="Opcional" multiline />
             <Button title="Salvar Agendamento" onPress={handleSaveAgendamento} />
             <View style={{ height: 16 }} />
@@ -360,7 +373,10 @@ export default function DashboardScreen({ route, navigation }) {
               filteredAppointments.map((apt) => (
                 <View key={apt.id} style={styles.appointmentRow}>
                   <Text style={styles.appointmentTime}>{apt.time}</Text>
-                  <View style={[styles.appointmentCard, { borderLeftColor: apt.borderColor, borderLeftWidth: apt.borderColor !== 'transparent' ? 4 : 0 }]}>
+                  <TouchableOpacity
+                    style={[styles.appointmentCard, { borderLeftColor: apt.borderColor, borderLeftWidth: apt.borderColor !== 'transparent' ? 4 : 0 }]}
+                    onPress={() => navigation.navigate('AgendamentoDetail', { id: apt.id })}
+                  >
                     <View style={styles.appointmentCardHeader}>
                       <Text style={styles.appointmentTitle}>{apt.title}</Text>
                       <View style={[styles.statusBadge, { backgroundColor: apt.statusBg }]}>
@@ -370,13 +386,37 @@ export default function DashboardScreen({ route, navigation }) {
                     <Text style={styles.appointmentClient}>{apt.client}</Text>
                     {apt.showButton && (
                       <View style={styles.appointmentActions}>
-                        <TouchableOpacity style={styles.startButton}>
-                          <Text style={styles.startButtonText}>Iniciar</Text>
+                        <TouchableOpacity
+                          style={styles.startButton}
+                          onPress={async (e) => {
+                            e.stopPropagation?.();
+                            try {
+                              await api.patch(`/Agendamento/${apt.id}/concluir`);
+                              fetchAgendamentos();
+                            } catch (err) {
+                              Alert.alert('Erro', err.message);
+                            }
+                          }}
+                        >
+                          <Text style={styles.startButtonText}>Concluir</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.actionSquare} />
+                        <TouchableOpacity
+                          style={styles.actionSquare}
+                          onPress={async (e) => {
+                            e.stopPropagation?.();
+                            try {
+                              await api.patch(`/Agendamento/${apt.id}/cancelar`);
+                              fetchAgendamentos();
+                            } catch (err) {
+                              Alert.alert('Erro', err.message);
+                            }
+                          }}
+                        >
+                          <Text style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: 18 }}>×</Text>
+                        </TouchableOpacity>
                       </View>
                     )}
-                  </View>
+                  </TouchableOpacity>
                 </View>
               ))
             )}
@@ -708,5 +748,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fieldError: {
+    color: '#D32F2F',
+    fontSize: 12,
+    marginTop: -8,
+    marginBottom: 8,
   },
 });

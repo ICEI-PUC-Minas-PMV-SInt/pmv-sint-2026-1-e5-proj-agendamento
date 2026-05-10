@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AgendamentoAPI.Data;
 using AgendamentoAPI.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,9 @@ namespace AgendamentoAPI.Controllers;
 [Produces("application/json")]
 public class AgendamentoController(AppDbContext db) : ControllerBase
 {
+    private int CurrentUserId =>
+        int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
     /// <summary>Lista agendamentos com filtro opcional por data</summary>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Agendamento>), StatusCodes.Status200OK)]
@@ -63,7 +67,8 @@ public class AgendamentoController(AppDbContext db) : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Create([FromBody] Agendamento agendamento)
     {
-        // Verifica conflito de horário
+        agendamento.UsuarioId = CurrentUserId;
+
         var conflito = await db.Agendamentos.AnyAsync(a =>
             a.UsuarioId == agendamento.UsuarioId &&
             a.Status == StatusAgendamento.Agendado &&
@@ -82,9 +87,28 @@ public class AgendamentoController(AppDbContext db) : ControllerBase
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Update(int id, [FromBody] Agendamento agendamento)
     {
         if (id != agendamento.Id) return BadRequest();
+
+        var existente = await db.Agendamentos.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
+        if (existente is null) return NotFound();
+
+        agendamento.UsuarioId = CurrentUserId;
+
+        if (agendamento.Status == StatusAgendamento.Agendado)
+        {
+            var conflito = await db.Agendamentos.AnyAsync(a =>
+                a.Id != id &&
+                a.UsuarioId == agendamento.UsuarioId &&
+                a.Status == StatusAgendamento.Agendado &&
+                a.DataHora == agendamento.DataHora);
+
+            if (conflito)
+                return Conflict(new { message = "Já existe um agendamento neste horário." });
+        }
+
         db.Entry(agendamento).State = EntityState.Modified;
         db.Entry(agendamento).Property(a => a.CriadoEm).IsModified = false;
         await db.SaveChangesAsync();
@@ -100,6 +124,19 @@ public class AgendamentoController(AppDbContext db) : ControllerBase
         var agendamento = await db.Agendamentos.FindAsync(id);
         if (agendamento is null) return NotFound();
         agendamento.Status = StatusAgendamento.Cancelado;
+        await db.SaveChangesAsync();
+        return NoContent();
+    }
+
+    /// <summary>Marca um agendamento como realizado</summary>
+    [HttpPatch("{id:int}/concluir")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Concluir(int id)
+    {
+        var agendamento = await db.Agendamentos.FindAsync(id);
+        if (agendamento is null) return NotFound();
+        agendamento.Status = StatusAgendamento.Realizado;
         await db.SaveChangesAsync();
         return NoContent();
     }

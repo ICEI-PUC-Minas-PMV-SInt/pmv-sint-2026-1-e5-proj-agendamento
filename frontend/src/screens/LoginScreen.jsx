@@ -1,32 +1,34 @@
 import { useState } from 'react';
-import { View, StyleSheet, Text, Image } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, StyleSheet, Text, Image, Platform, Alert } from 'react-native';
 
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { colors } from '../theme/colors';
-import { api } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
+    const { signIn } = useAuth();
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+
+    function notify(msg) {
+        if (Platform.OS === 'web') window.alert(msg);
+        else Alert.alert('Atenção', msg);
+    }
 
     async function handleLogin() {
+        if (!email || !senha) {
+            notify('Informe e-mail e senha.');
+            return;
+        }
+        setSubmitting(true);
         try {
-            const data = await api.post('/Auth/login', {
-                email,
-                senha,
-            });
-
-            console.log('Login realizado:', data);
-
-            const userName = data.nome || data.Nome;
-            await AsyncStorage.setItem('token', data.token);
-
-            navigation.replace('Services', { userName });
+            await signIn(email, senha);
         } catch (error) {
-            console.log(error.message);
-            alert('E-mail ou senha inválidos.');
+            notify('E-mail ou senha inválidos.');
+        } finally {
+            setSubmitting(false);
         }
     }
 
@@ -51,6 +53,7 @@ export default function LoginScreen({ navigation }) {
                     value={email}
                     onChangeText={setEmail}
                     keyboardType="email-address"
+                    autoCapitalize="none"
                 />
 
                 <Input
@@ -62,7 +65,7 @@ export default function LoginScreen({ navigation }) {
                 />
 
                 <View style={{ marginTop: 16 }}>
-                    <Button title="Entrar" onPress={handleLogin} />
+                    <Button title={submitting ? 'Entrando...' : 'Entrar'} onPress={handleLogin} disabled={submitting} />
                 </View>
             </View>
         </View>

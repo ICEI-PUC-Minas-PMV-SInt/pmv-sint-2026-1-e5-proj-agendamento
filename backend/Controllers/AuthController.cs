@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using AgendamentoAPI.Data;
 using AgendamentoAPI.DTOs;
 using AgendamentoAPI.Models;
 using AgendamentoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,7 +34,7 @@ public class AuthController(AppDbContext db, TokenService tokenService) : Contro
         await db.SaveChangesAsync();
 
         var token = tokenService.GerarToken(usuario);
-        return CreatedAtAction(nameof(Register), new AuthResponseDto(token, usuario.Nome, usuario.Email, usuario.Role));
+        return CreatedAtAction(nameof(Register), new AuthResponseDto(token, usuario.Id, usuario.Nome, usuario.Email, usuario.Role));
     }
 
     /// <summary>Realiza login e retorna o token JWT</summary>
@@ -47,6 +49,22 @@ public class AuthController(AppDbContext db, TokenService tokenService) : Contro
             return Unauthorized(new { message = "Credenciais inválidas." });
 
         var token = tokenService.GerarToken(usuario);
-        return Ok(new AuthResponseDto(token, usuario.Nome, usuario.Email, usuario.Role));
+        return Ok(new AuthResponseDto(token, usuario.Id, usuario.Nome, usuario.Email, usuario.Role));
+    }
+
+    /// <summary>Retorna os dados do usuário autenticado a partir do token</summary>
+    [HttpGet("me")]
+    [Authorize]
+    [ProducesResponseType(typeof(MeDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Me()
+    {
+        var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(idClaim, out var id)) return Unauthorized();
+
+        var usuario = await db.Usuarios.FindAsync(id);
+        if (usuario is null) return Unauthorized();
+
+        return Ok(new MeDto(usuario.Id, usuario.Nome, usuario.Email, usuario.Role));
     }
 }

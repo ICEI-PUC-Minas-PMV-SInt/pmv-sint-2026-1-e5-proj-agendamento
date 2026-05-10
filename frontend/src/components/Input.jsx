@@ -58,11 +58,11 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top',
     },
     inputError: {
-        borderColor: colors.roseGold,
+        borderColor: '#D32F2F',
     },
     error: {
         marginTop: 4,
         fontSize: 12,
-        color: colors.roseGold,
+        color: '#D32F2F',
     },
 });

@@ -15,6 +15,14 @@ public record RegisterDto(
 
 public record AuthResponseDto(
     string Token,
+    int Id,
+    string Nome,
+    string Email,
+    string Role
+);
+
+public record MeDto(
+    int Id,
     string Nome,
     string Email,
     string Role

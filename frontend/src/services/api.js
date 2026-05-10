@@ -1,7 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//const BASE_URL = 'http://10.0.2.2:5000/api'; // Android Emulator → localhost
-const BASE_URL = 'http://localhost:5034/api'; // quando estiver usando pwla web
+const BASE_URL = 'http://localhost:5034/api';
+
+let onUnauthorized = null;
+export function registerUnauthorizedHandler(handler) {
+  onUnauthorized = handler;
+}
+
 async function getToken() {
   return AsyncStorage.getItem('token');
 }
@@ -18,6 +23,11 @@ async function request(path, options = {}) {
     },
   });
 
+  if (response.status === 401) {
+    if (onUnauthorized) onUnauthorized();
+    throw new Error('[HTTP 401] Sessão expirada. Faça login novamente.');
+  }
+
   const text = await response.text();
   let data;
   try {
@@ -28,10 +38,9 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     let backendMessage = 'Erro desconhecido';
-    
+
     if (typeof data === 'object' && data !== null) {
       if (data.errors) {
-        // Formata os erros do ASP.NET Core: "Campo: Erro 1, Erro 2"
         backendMessage = Object.entries(data.errors)
           .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
           .join('\n');
@@ -42,9 +51,13 @@ async function request(path, options = {}) {
       backendMessage = data;
     }
 
-    const errorMessage = backendMessage ? `[HTTP ${response.status}] ${backendMessage}` : `Erro HTTP ${response.status}`;
-    console.error('API Error:', { path, status: response.status, backendMessage, originalData: data });
-    throw new Error(errorMessage);
+    const errorMessage = backendMessage
+      ? `[HTTP ${response.status}] ${backendMessage}`
+      : `Erro HTTP ${response.status}`;
+    const err = new Error(errorMessage);
+    err.status = response.status;
+    err.payload = data;
+    throw err;
   }
 
   return data;
@@ -54,6 +67,6 @@ export const api = {
   get:    (path)        => request(path),
   post:   (path, body)  => request(path, { method: 'POST',   body: JSON.stringify(body) }),
   put:    (path, body)  => request(path, { method: 'PUT',    body: JSON.stringify(body) }),
-  patch:  (path)        => request(path, { method: 'PATCH' }),
+  patch:  (path, body)  => request(path, { method: 'PATCH', body: body ? JSON.stringify(body) : undefined }),
   delete: (path)        => request(path, { method: 'DELETE' }),
 };

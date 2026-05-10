@@ -7,7 +7,9 @@ import BottomMenu from '../components/BottomMenu';
 import { api } from '../services/api';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import FieldError from '../components/FieldError';
 import AppLitleButton from '../components/LitleButton';
+import { validateCliente } from '../utils/validators';
 
 const FILTERS = ['Todos', 'Recentes', 'Frequentes', 'Aniversariantes'];
 
@@ -117,38 +119,12 @@ export default function ClientsScreen({ navigation }) {
   }
 
   async function handleSaveClient() {
-    const newErrors = {};
-
-    if (!nome || nome.trim().length < 3) {
-      newErrors.nome = 'O nome deve ter pelo menos 3 caracteres.';
-    }
-
-    if (email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email) || email.length < 8) {
-        newErrors.email = 'E-mail inválido ou muito curto (mínimo 8 caracteres).';
-      }
-    }
-
-    if (telefone) {
-      const phoneClean = telefone.replace(/\D/g, '');
-      if (phoneClean.length > 0 && phoneClean.length < 10) {
-        newErrors.telefone = 'O telefone deve ter pelo menos 10 dígitos.';
-      }
-    }
-
-    if (dataNascimento) {
-      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-      if (!dateRegex.test(dataNascimento)) {
-        newErrors.dataNascimento = 'Formato inválido (AAAA-MM-DD).';
-      }
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      Alert.alert('Atenção', 'Verifique os erros no formulário.');
+    const result = validateCliente({ nome, email, telefone, dataNascimento });
+    if (!result.ok) {
+      setErrors(result.errors);
       return;
     }
+    setErrors({});
 
     const clientData = {
       nome: nome.trim(),
