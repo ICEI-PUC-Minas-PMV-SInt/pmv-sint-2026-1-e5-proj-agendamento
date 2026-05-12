@@ -8,12 +8,17 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ─── Banco de Dados MySQL ────────────────────────────────────────────────────
+// ─── Banco de Dados PostgreSQL ───────────────────────────────────────────────
 if (!builder.Environment.IsEnvironment("Testing"))
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    // Em produção, a connection string vem da variável de ambiente DATABASE_URL
+    // (formato do Neon: postgres://user:pass@host/db). Localmente, vem do appsettings.
+    var rawConnection = Environment.GetEnvironmentVariable("DATABASE_URL")
+                        ?? builder.Configuration.GetConnectionString("DefaultConnection");
+    var connectionString = NormalizePostgresConnectionString(rawConnection);
+
     builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+        options.UseNpgsql(connectionString));
 }
 
 // ─── JWT ─────────────────────────────────────────────────────────────────────
@@ -106,8 +111,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// ─── Aplica migrations automaticamente em desenvolvimento ─────────────────────
-if (app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Testing"))
+// ─── Aplica migrations automaticamente em qualquer ambiente (exceto Testing) ──
+if (!app.Environment.IsEnvironment("Testing"))
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -115,6 +120,25 @@ if (app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Testing")
 }
 
 app.Run();
+
+// Converte a URL no formato Neon (postgres://user:pass@host:port/db) para o
+// formato esperado pelo Npgsql (Host=...;Port=...;Username=...;Password=...).
+// Se já vier no formato Npgsql, retorna como está.
+static string? NormalizePostgresConnectionString(string? raw)
+{
+    if (string.IsNullOrWhiteSpace(raw)) return raw;
+    if (!raw.StartsWith("postgres://") && !raw.StartsWith("postgresql://"))
+        return raw;
+
+    var uri = new Uri(raw);
+    var userInfo = uri.UserInfo.Split(':', 2);
+    var user = Uri.UnescapeDataString(userInfo[0]);
+    var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty;
+    var database = uri.AbsolutePath.TrimStart('/');
+    var port = uri.Port > 0 ? uri.Port : 5432;
+
+    return $"Host={uri.Host};Port={port};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+}
 
 // Expõe Program para WebApplicationFactory<Program> nos testes
 public partial class Program { }

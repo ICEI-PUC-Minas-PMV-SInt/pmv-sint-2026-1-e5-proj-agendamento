@@ -1,0 +1,13 @@
+**/bin
+**/obj
+**/.vs
+**/.vscode
+**/.idea
+**/*.user
+**/appsettings.Development.json
+**/Properties/launchSettings.json
+**/.git
+**/.gitignore
+**/Dockerfile
+**/.dockerignore
+**/fly.toml

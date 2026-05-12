@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BASE_URL = 'http://localhost:5034/api';
+// Em produção, defina EXPO_PUBLIC_API_URL com a URL pública do backend (ex:
+// https://studio-lash-api.fly.dev/api). Localmente, usa o backend em localhost.
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5034/api';
 
 let onUnauthorized = null;
 export function registerUnauthorizedHandler(handler) {

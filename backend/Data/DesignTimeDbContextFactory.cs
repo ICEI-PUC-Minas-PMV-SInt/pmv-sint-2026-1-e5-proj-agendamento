@@ -5,7 +5,7 @@ namespace AgendamentoAPI.Data;
 
 /// <summary>
 /// Usado apenas pelo EF Core em tempo de design (dotnet ef migrations).
-/// Usa versão fixa do MySQL para não precisar de conexão ativa.
+/// Conexão fake — não precisa de banco rodando para gerar as migrations.
 /// </summary>
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
@@ -13,10 +13,8 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
     {
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
-        // MySQL 8.0 — ajuste a versão se necessário
-        optionsBuilder.UseMySql(
-            "Server=localhost;Database=agendamento_db;User=root;Password=pucminasagendamento;",
-            new MySqlServerVersion(new Version(8, 0, 36)));
+        optionsBuilder.UseNpgsql(
+            "Host=localhost;Port=5432;Database=agendamento_db;Username=postgres;Password=pucminasagendamento");
 
         return new AppDbContext(optionsBuilder.Options);
     }

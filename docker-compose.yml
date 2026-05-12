@@ -1,20 +1,21 @@
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: agendamento_mysql
+  postgres:
+    image: postgres:16
+    container_name: agendamento_postgres
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: pucminasagendamento
-      MYSQL_DATABASE: agendamento_db
+      POSTGRES_DB: agendamento_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pucminasagendamento
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ppucminasagendamento"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d agendamento_db"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  mysql_data:
+  postgres_data:
