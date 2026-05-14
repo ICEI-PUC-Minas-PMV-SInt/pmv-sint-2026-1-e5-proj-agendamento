@@ -1,0 +1,32 @@
+name: Deploy backend to Fly.io
+
+# Dispara em push para main que toque em qualquer arquivo do backend
+# (ignora alterações apenas em docs/, frontend/, etc.)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:  # permite disparo manual pela aba Actions do GitHub
+
+concurrency:
+  group: deploy-backend-${{ github.ref }}
+  cancel-in-progress: true  # se vier um push novo, cancela o deploy anterior
+
+jobs:
+  deploy:
+    name: Build and deploy to Fly.io
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy
+        run: flyctl deploy --remote-only --config fly.toml
+        working-directory: backend
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

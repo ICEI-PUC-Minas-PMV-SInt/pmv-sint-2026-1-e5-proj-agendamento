@@ -1,0 +1,42 @@
+name: Testes do backend
+
+# Roda em push para qualquer branch (exceto main) e em PR para main.
+# Não faz deploy — apenas valida que os testes passam antes de mergear.
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - 'backend/**'
+      - 'backend.Tests/**'
+      - '.github/workflows/test-backend.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'backend.Tests/**'
+
+concurrency:
+  group: test-backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: dotnet test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restaurar dependências
+        run: dotnet restore backend.Tests/AgendamentoAPI.Tests.csproj
+
+      - name: Compilar
+        run: dotnet build backend.Tests/AgendamentoAPI.Tests.csproj --no-restore --configuration Release
+
+      - name: Rodar testes
+        run: dotnet test backend.Tests/AgendamentoAPI.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"

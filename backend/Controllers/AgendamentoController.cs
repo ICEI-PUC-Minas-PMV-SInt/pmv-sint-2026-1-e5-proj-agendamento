@@ -68,6 +68,7 @@ public class AgendamentoController(AppDbContext db) : ControllerBase
     public async Task<IActionResult> Create([FromBody] Agendamento agendamento)
     {
         agendamento.UsuarioId = CurrentUserId;
+        agendamento.DataHora = DateTime.SpecifyKind(agendamento.DataHora, DateTimeKind.Unspecified);
 
         var conflito = await db.Agendamentos.AnyAsync(a =>
             a.UsuarioId == agendamento.UsuarioId &&
@@ -96,6 +97,7 @@ public class AgendamentoController(AppDbContext db) : ControllerBase
         if (existente is null) return NotFound();
 
         agendamento.UsuarioId = CurrentUserId;
+        agendamento.DataHora = DateTime.SpecifyKind(agendamento.DataHora, DateTimeKind.Unspecified);
 
         if (agendamento.Status == StatusAgendamento.Agendado)
         {

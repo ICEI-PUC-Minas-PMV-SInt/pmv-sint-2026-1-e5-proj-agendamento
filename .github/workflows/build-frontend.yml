@@ -1,0 +1,49 @@
+name: Build Android APK (EAS)
+
+# Dispara em push para main que toque em qualquer arquivo do frontend.
+# ⚠️ Atenção à cota: o plano gratuito do EAS dá ~30 builds Android/mês.
+# Se for fazer muitos pushes pequenos no frontend, troque o gatilho para
+# `workflow_dispatch` apenas (build sob demanda) ou para tags `v*`.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/build-frontend.yml'
+  workflow_dispatch:  # permite disparo manual pela aba Actions do GitHub
+
+concurrency:
+  group: build-frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build APK on EAS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Configurar EAS CLI e autenticar
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Instalar dependências
+        run: npm ci
+        working-directory: frontend
+
+      # --no-wait faz o GitHub Action terminar logo após enfileirar o build no EAS.
+      # O build em si continua rodando na nuvem do Expo — acompanhe em
+      # https://expo.dev/accounts/rodrigocsouza7/projects/studio-lash/builds
+      - name: Enfileirar build de produção
+        run: eas build --platform android --profile production --non-interactive --no-wait
+        working-directory: frontend
