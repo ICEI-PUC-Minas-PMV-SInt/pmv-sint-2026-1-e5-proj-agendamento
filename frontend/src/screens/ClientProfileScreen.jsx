@@ -112,7 +112,7 @@ export default function ClientProfileScreen({ route, navigation }) {
   }
 
   async function handleDelete() {
-    if (!(await confirmDialog('Excluir esta cliente? Os agendamentos relacionados não poderão referenciá-la.'))) return;
+    if (!(await confirmDialog('Excluir esta cliente? Todos os agendamentos dela também serão removidos. Esta ação não pode ser desfeita.'))) return;
     try {
       await api.delete(`/Cliente/${clientId}`);
       notify('Cliente excluída.');

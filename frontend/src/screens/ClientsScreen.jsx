@@ -154,7 +154,7 @@ export default function ClientsScreen({ navigation }) {
 
   function handleDelete(client) {
     const confirmDelete = window.confirm
-      ? window.confirm(`Deseja remover o cliente "${client.name}"?`)
+      ? window.confirm(`Remover "${client.name}"? Todos os agendamentos desta cliente também serão removidos.`)
       : true;
 
     if (!confirmDelete) return;

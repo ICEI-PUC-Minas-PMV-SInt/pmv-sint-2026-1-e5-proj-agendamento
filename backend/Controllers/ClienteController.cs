@@ -52,14 +52,23 @@ public class ClienteController(AppDbContext db) : ControllerBase
         return NoContent();
     }
 
-    /// <summary>Remove uma cliente</summary>
+    /// <summary>Remove uma cliente e os agendamentos relacionados</summary>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-        var cliente = await db.Clientes.FindAsync(id);
+        var cliente = await db.Clientes
+            .Include(c => c.Agendamentos)
+            .FirstOrDefaultAsync(c => c.Id == id);
         if (cliente is null) return NotFound();
+
+        // O relacionamento Agendamento -> Cliente usa DeleteBehavior.Restrict,
+        // então é preciso remover os agendamentos da cliente antes de excluí-la,
+        // caso contrário o banco rejeita a operação por violação de FK.
+        if (cliente.Agendamentos.Count > 0)
+            db.Agendamentos.RemoveRange(cliente.Agendamentos);
+
         db.Clientes.Remove(cliente);
         await db.SaveChangesAsync();
         return NoContent();
