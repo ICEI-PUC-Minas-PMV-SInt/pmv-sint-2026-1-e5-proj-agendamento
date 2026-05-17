@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Alert, TextInput, TouchableOpacity } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -108,18 +109,16 @@ export default function ServicesScreen({ navigation }) {
     );
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
+        <View style={styles.container}>
             <Text style={styles.title}>Catálogo de Serviços</Text>
 
             {showForm ? (
-                <ScrollView
+                <KeyboardAwareScrollView
                     style={{ width: '100%' }}
                     contentContainerStyle={styles.formScroll}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
+                    bottomOffset={24}
                 >
                     <View style={{ width: '100%', maxWidth: 400, marginBottom: 16 }}>
                         <Button
@@ -165,7 +164,7 @@ export default function ServicesScreen({ navigation }) {
                             onPress={handleSaveService}
                         />
                     </View>
-                </ScrollView>
+                </KeyboardAwareScrollView>
             ) : (
                 <>
                     <View style={[styles.actionRow, { width: '100%', maxWidth: 400 }]}>
@@ -215,7 +214,7 @@ export default function ServicesScreen({ navigation }) {
                 </>
             )}
             <BottomMenu active="Services" navigation={navigation} />
-        </KeyboardAvoidingView>
+        </View>
     );
 }
 

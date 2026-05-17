@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TextInput, SectionList, Image, TouchableOpacity, ScrollView, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, SectionList, Image, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { colors } from '../theme/colors';
@@ -236,15 +237,13 @@ export default function ClientsScreen({ navigation }) {
   );
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <View style={styles.container}>
       {showForm ? (
-        <ScrollView
+        <KeyboardAwareScrollView
           contentContainerStyle={styles.formScrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          bottomOffset={24}
         >
           {renderHeader()}
 
@@ -303,7 +302,7 @@ export default function ClientsScreen({ navigation }) {
               onPress={handleSaveClient}
             />
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       ) : (
         <>
           <View style={styles.topContainer}>
@@ -375,7 +374,7 @@ export default function ClientsScreen({ navigation }) {
       )}
 
       <BottomMenu active="Clientes" navigation={navigation} />
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform, ActivityIndicator } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Feather } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -141,10 +142,7 @@ export default function ClientProfileScreen({ route, navigation }) {
   const initials = (client.nome || '?').trim().charAt(0).toUpperCase();
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
           <Feather name="chevron-left" size={24} color={colors.black} />
@@ -160,7 +158,7 @@ export default function ClientProfileScreen({ route, navigation }) {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+      <KeyboardAwareScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" bottomOffset={24}>
         {showForm ? (
           <View style={styles.form}>
             <Input label="Nome *" value={nome} onChangeText={setNome} placeholder="Ex: Amanda Silva" />
@@ -292,7 +290,7 @@ export default function ClientProfileScreen({ route, navigation }) {
             <View style={{ height: 140 }} />
           </>
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       {!showForm && (
         <View style={styles.floatingButtonContainer}>
@@ -306,7 +304,7 @@ export default function ClientProfileScreen({ route, navigation }) {
       )}
 
       <BottomMenu active="Clientes" navigation={navigation} />
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors } from '../theme/colors';
 import BottomMenu from '../components/BottomMenu';
@@ -258,14 +259,12 @@ export default function DashboardScreen({ route, navigation }) {
     : `R$ ${weekRevenue.toFixed(2).replace('.', ',')} prev.`;
 
   return (
-    <KeyboardAvoidingView
-      style={styles.mainContainer}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
+    <View style={styles.mainContainer}>
+      <KeyboardAwareScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        bottomOffset={24}
       >
         <View style={styles.header}>
           <View>
@@ -430,9 +429,9 @@ export default function DashboardScreen({ route, navigation }) {
           </View>
         )}
         <View style={{ height: 100 }} />
-      </ScrollView>
+      </KeyboardAwareScrollView>
       <BottomMenu active="Dashboard" navigation={navigation} />
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
