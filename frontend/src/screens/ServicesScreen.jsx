@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Alert, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -108,105 +108,114 @@ export default function ServicesScreen({ navigation }) {
     );
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
             <Text style={styles.title}>Catálogo de Serviços</Text>
 
-            {showForm && (
-                <View style={{ width: '100%', maxWidth: 400, marginBottom: 16 }}>
-                    <Button
-                        title="Cancelar cadastro"
-                        onPress={resetForm}
-                    />
-                </View>
-            )}
-
-            {!showForm && (
-                <View style={[styles.actionRow, { width: '100%', maxWidth: 400 }]}>
-                    <View style={styles.searchWrapper}>
-                        <TextInput
-                            style={styles.searchInput}
-                            placeholder="Buscar serviço..."
-                            placeholderTextColor={colors.mutedText}
-                            value={searchQuery}
-                            onChangeText={setSearchQuery}
+            {showForm ? (
+                <ScrollView
+                    style={{ width: '100%' }}
+                    contentContainerStyle={styles.formScroll}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
+                    <View style={{ width: '100%', maxWidth: 400, marginBottom: 16 }}>
+                        <Button
+                            title="Cancelar cadastro"
+                            onPress={resetForm}
                         />
                     </View>
-                    <TouchableOpacity style={styles.newServiceButton} onPress={() => setShowForm(true)}>
-                        <Text style={styles.newServiceButtonText}>+ Novo serviço</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
 
-            {showForm && (
-                <View style={styles.form}>
-                    <Input
-                        label="Nome"
-                        placeholder="Ex: Volume Brasileiro"
-                        value={nome}
-                        onChangeText={setNome}
-                    />
+                    <View style={styles.form}>
+                        <Input
+                            label="Nome"
+                            placeholder="Ex: Volume Brasileiro"
+                            value={nome}
+                            onChangeText={setNome}
+                        />
 
-                    <Input
-                        label="Descrição"
-                        placeholder="Descreva o serviço"
-                        value={descricao}
-                        onChangeText={setDescricao}
-                        multiline
-                    />
+                        <Input
+                            label="Descrição"
+                            placeholder="Descreva o serviço"
+                            value={descricao}
+                            onChangeText={setDescricao}
+                            multiline
+                        />
 
-                    <Input
-                        label="Preço"
-                        placeholder="Ex: 180"
-                        value={preco}
-                        onChangeText={setPreco}
-                        keyboardType="numeric"
-                    />
+                        <Input
+                            label="Preço"
+                            placeholder="Ex: 180"
+                            value={preco}
+                            onChangeText={setPreco}
+                            keyboardType="numeric"
+                        />
 
-                    <Input
-                        label="Duração em minutos"
-                        placeholder="Ex: 120"
-                        value={duracaoMinutos}
-                        onChangeText={setDuracaoMinutos}
-                        keyboardType="numeric"
-                    />
+                        <Input
+                            label="Duração em minutos"
+                            placeholder="Ex: 120"
+                            value={duracaoMinutos}
+                            onChangeText={setDuracaoMinutos}
+                            keyboardType="numeric"
+                        />
 
-                    <Button
-                        title={editingService ? 'Salvar alterações' : 'Salvar serviço'}
-                        onPress={handleSaveService}
-                    />
-                </View>
-            )}
-
-            <FlatList
-                style={{ width: '100%' }}
-                data={filteredServices}
-                keyExtractor={(item) => String(item.id)}
-                contentContainerStyle={styles.list}
-                renderItem={({ item }) => (
-                    <View style={styles.card}>
-                        <Text style={styles.serviceName}>{item.nome}</Text>
-
-                        {item.descricao ? (
-                            <Text style={styles.description}>{item.descricao}</Text>
-                        ) : null}
-
-                        <View style={styles.infoRow}>
-                            <Text style={styles.info}>{item.duracaoMinutos} min</Text>
-                            <Text style={styles.info}>R$ {item.preco}</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', gap: 10 }}>
-                            <AppLitleButton title="Editar" onPress={() => handleEdit(item)} />
-                            <AppLitleButton title="Excluir" onPress={() => handleDelete(item)} />
-                        </View>
+                        <Button
+                            title={editingService ? 'Salvar alterações' : 'Salvar serviço'}
+                            onPress={handleSaveService}
+                        />
                     </View>
-                )}
-                ListEmptyComponent={
-                    <Text style={styles.empty}>Nenhum serviço cadastrado.</Text>
-                }
-            />
+                </ScrollView>
+            ) : (
+                <>
+                    <View style={[styles.actionRow, { width: '100%', maxWidth: 400 }]}>
+                        <View style={styles.searchWrapper}>
+                            <TextInput
+                                style={styles.searchInput}
+                                placeholder="Buscar serviço..."
+                                placeholderTextColor={colors.mutedText}
+                                value={searchQuery}
+                                onChangeText={setSearchQuery}
+                            />
+                        </View>
+                        <TouchableOpacity style={styles.newServiceButton} onPress={() => setShowForm(true)}>
+                            <Text style={styles.newServiceButtonText}>+ Novo serviço</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <FlatList
+                        style={{ width: '100%' }}
+                        data={filteredServices}
+                        keyExtractor={(item) => String(item.id)}
+                        contentContainerStyle={styles.list}
+                        keyboardShouldPersistTaps="handled"
+                        renderItem={({ item }) => (
+                            <View style={styles.card}>
+                                <Text style={styles.serviceName}>{item.nome}</Text>
+
+                                {item.descricao ? (
+                                    <Text style={styles.description}>{item.descricao}</Text>
+                                ) : null}
+
+                                <View style={styles.infoRow}>
+                                    <Text style={styles.info}>{item.duracaoMinutos} min</Text>
+                                    <Text style={styles.info}>R$ {item.preco}</Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', gap: 10 }}>
+                                    <AppLitleButton title="Editar" onPress={() => handleEdit(item)} />
+                                    <AppLitleButton title="Excluir" onPress={() => handleDelete(item)} />
+                                </View>
+                            </View>
+                        )}
+                        ListEmptyComponent={
+                            <Text style={styles.empty}>Nenhum serviço cadastrado.</Text>
+                        }
+                    />
+                </>
+            )}
             <BottomMenu active="Services" navigation={navigation} />
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -255,6 +264,10 @@ const styles = StyleSheet.create({
         color: colors.text,
         marginBottom: 16,
         textAlign: 'center',
+    },
+    formScroll: {
+        alignItems: 'center',
+        paddingBottom: 120,
     },
     form: {
         marginTop: 16,

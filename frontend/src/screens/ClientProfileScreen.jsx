@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -141,7 +141,10 @@ export default function ClientProfileScreen({ route, navigation }) {
   const initials = (client.nome || '?').trim().charAt(0).toUpperCase();
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
           <Feather name="chevron-left" size={24} color={colors.black} />
@@ -291,17 +294,19 @@ export default function ClientProfileScreen({ route, navigation }) {
         )}
       </ScrollView>
 
-      <View style={styles.floatingButtonContainer}>
-        <TouchableOpacity
-          style={styles.floatingButton}
-          onPress={() => navigation.navigate('Dashboard', { preselectClienteId: clientId })}
-        >
-          <Text style={styles.floatingButtonText}>+ Novo Agendamento</Text>
-        </TouchableOpacity>
-      </View>
+      {!showForm && (
+        <View style={styles.floatingButtonContainer}>
+          <TouchableOpacity
+            style={styles.floatingButton}
+            onPress={() => navigation.navigate('Dashboard', { preselectClienteId: clientId })}
+          >
+            <Text style={styles.floatingButtonText}>+ Novo Agendamento</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <BottomMenu active="Clientes" navigation={navigation} />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

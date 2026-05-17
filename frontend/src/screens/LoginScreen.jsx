@@ -1,5 +1,16 @@
 import { useState } from 'react';
-import { View, StyleSheet, Text, Image, Platform, Alert } from 'react-native';
+import {
+    View,
+    StyleSheet,
+    Text,
+    Image,
+    Platform,
+    Alert,
+    KeyboardAvoidingView,
+    ScrollView,
+    Keyboard,
+    TouchableWithoutFeedback,
+} from 'react-native';
 
 import Button from '../components/Button';
 import Input from '../components/Input';
@@ -33,52 +44,68 @@ export default function LoginScreen() {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Image
-                    source={require('../../assets/logo-ivinah.png')}
-                    style={styles.logoImage}
-                />
-            </View>
+        <KeyboardAvoidingView
+            style={styles.flex}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <ScrollView
+                    contentContainerStyle={styles.container}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
+                    <View style={styles.header}>
+                        <Image
+                            source={require('../../assets/logo-ivinah.png')}
+                            style={styles.logoImage}
+                        />
+                    </View>
 
-            <Text style={styles.logo}>Lash Designer</Text>
-            <Text style={styles.subtitle}>Ivinah Sousa</Text>
+                    <Text style={styles.logo}>Lash Designer</Text>
+                    <Text style={styles.subtitle}>Ivinah Sousa</Text>
 
-            <View style={styles.card}>
-                <Text style={styles.title}>Bem-vinda de volta</Text>
+                    <View style={styles.card}>
+                        <Text style={styles.title}>Bem-vinda de volta</Text>
 
-                <Input
-                    label="E-mail"
-                    placeholder="seu@email.com"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                />
+                        <Input
+                            label="E-mail"
+                            placeholder="seu@email.com"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
 
-                <Input
-                    label="Senha"
-                    placeholder="Digite sua senha"
-                    value={senha}
-                    onChangeText={setSenha}
-                    secureTextEntry
-                />
+                        <Input
+                            label="Senha"
+                            placeholder="Digite sua senha"
+                            value={senha}
+                            onChangeText={setSenha}
+                            secureTextEntry
+                        />
 
-                <View style={{ marginTop: 16 }}>
-                    <Button title={submitting ? 'Entrando...' : 'Entrar'} onPress={handleLogin} disabled={submitting} />
-                </View>
-            </View>
-        </View>
+                        <View style={{ marginTop: 16 }}>
+                            <Button title={submitting ? 'Entrando...' : 'Entrar'} onPress={handleLogin} disabled={submitting} />
+                        </View>
+                    </View>
+                </ScrollView>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
+    flex: {
+        flex: 1,
+        backgroundColor: colors.background,
+    },
     container: {
         backgroundColor: colors.background,
-        flex: 1,
+        flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 24,
+        paddingVertical: 48,
     },
     card: {
         width: '100%',

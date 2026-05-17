@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TextInput, SectionList, Image, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, SectionList, Image, TouchableOpacity, ScrollView, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { colors } from '../theme/colors';
@@ -236,20 +236,25 @@ export default function ClientsScreen({ navigation }) {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.topContainer}>
-        {renderHeader()}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      {showForm ? (
+        <ScrollView
+          contentContainerStyle={styles.formScrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {renderHeader()}
 
-        {showForm && (
           <View style={{ marginBottom: 16 }}>
             <Button
               title="Cancelar cadastro"
               onPress={resetForm}
             />
           </View>
-        )}
 
-        {showForm && (
           <View style={styles.form}>
             <Input
               label="Nome *"
@@ -298,10 +303,12 @@ export default function ClientsScreen({ navigation }) {
               onPress={handleSaveClient}
             />
           </View>
-        )}
+        </ScrollView>
+      ) : (
+        <>
+          <View style={styles.topContainer}>
+            {renderHeader()}
 
-        {!showForm && (
-          <>
             <View style={styles.actionRow}>
               <View style={styles.searchWrapper}>
                 <TextInput
@@ -343,31 +350,32 @@ export default function ClientsScreen({ navigation }) {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-          </>
-        )}
-      </View>
+          </View>
 
-      {isLoading ? (
-        <ActivityIndicator size="large" color={colors.roseGold} style={{ flex: 1 }} />
-      ) : (
-        <SectionList
-          sections={filteredClients}
-          keyExtractor={(item) => item.id}
-          renderItem={renderClientCard}
-          renderSectionHeader={renderSectionHeader}
-          contentContainerStyle={styles.listContent}
-          stickySectionHeadersEnabled={false}
-        />
+          {isLoading ? (
+            <ActivityIndicator size="large" color={colors.roseGold} style={{ flex: 1 }} />
+          ) : (
+            <SectionList
+              sections={filteredClients}
+              keyExtractor={(item) => item.id}
+              renderItem={renderClientCard}
+              renderSectionHeader={renderSectionHeader}
+              contentContainerStyle={styles.listContent}
+              stickySectionHeadersEnabled={false}
+              keyboardShouldPersistTaps="handled"
+            />
+          )}
+
+          <View style={styles.paginatorContainer}>
+            <View style={[styles.dot, styles.dotActive]} />
+            <View style={styles.dot} />
+            <View style={styles.dot} />
+          </View>
+        </>
       )}
 
-      <View style={styles.paginatorContainer}>
-        <View style={[styles.dot, styles.dotActive]} />
-        <View style={styles.dot} />
-        <View style={styles.dot} />
-      </View>
-
       <BottomMenu active="Clientes" navigation={navigation} />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -380,6 +388,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 16,
+  },
+  formScrollContent: {
+    paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingBottom: 140,
   },
   form: {
     marginBottom: 20,
