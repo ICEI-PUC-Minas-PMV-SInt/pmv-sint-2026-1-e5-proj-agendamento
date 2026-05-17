@@ -138,71 +138,89 @@ Esta seção apresenta as evidências (capturas de tela) que comprovam que cada 
 | **Caso de Teste** | **CT01 – Realizar login no sistema** |
 |:---:|:---:|
 | Requisito Associado | Pré-requisito de acesso à aplicação. |
-| Resultado |  |
-| Registro de evidência | ![Evidência CT01](img/evidencias/ct01-login.png) |
+| Resultado | ✅ Aprovado |
+| Registro de evidência | ![Evidência CT01-1](img/evidencias/ct01-login-1.png) <br> ![Evidência CT01-2](img/evidencias/ct01-login-2.png) <br> ![Evidência CT01-3](img/evidencias/ct01-login-3.png) |
 
 | **Caso de Teste** | **CT02 – Cadastrar nova cliente** |
 |:---:|:---:|
 | Requisito Associado | RF-001, RF-004, RF-013 |
-| Resultado |  |
+| Resultado | ✅ Aprovado |
 | Registro de evidência | ![Evidência CT02](img/evidencias/ct02-cadastrar-cliente.png) |
 
 | **Caso de Teste** | **CT03 – Editar dados de uma cliente cadastrada** |
 |:---:|:---:|
 | Requisito Associado | RF-003, RF-004 |
-| Resultado |  |
+| Resultado | ✅ Aprovado |
 | Registro de evidência | ![Evidência CT03](img/evidencias/ct03-editar-cliente.png) |
 
 | **Caso de Teste** | **CT04 – Listar clientes com busca e filtros** |
 |:---:|:---:|
 | Requisito Associado | RF-002, RF-010 |
-| Resultado |  |
-| Registro de evidência | ![Evidência CT04](img/evidencias/ct04-listar-clientes.png) |
+| Resultado | ✅ Aprovado |
+| Registro de evidência | ![Evidência CT04-1](img/evidencias/ct04-listar-clientes-1.png) <br> ![Evidência CT04-2](img/evidencias/ct04-listar-clientes-2.png) <br> ![Evidência CT04-3](img/evidencias/ct04-listar-clientes-3.png) |
 
 | **Caso de Teste** | **CT05 – Cadastrar novo serviço no catálogo** |
 |:---:|:---:|
 | Requisito Associado | RF-009 |
-| Resultado |  |
+| Resultado | ✅ Aprovado |
 | Registro de evidência | ![Evidência CT05](img/evidencias/ct05-cadastrar-servico.png) |
 
 | **Caso de Teste** | **CT06 – Cadastrar novo agendamento** |
 |:---:|:---:|
 | Requisito Associado | RF-005, RF-006 |
-| Resultado |  |
+| Resultado | ✅ Aprovado |
 | Registro de evidência | ![Evidência CT06](img/evidencias/ct06-novo-agendamento.png) |
 
 | **Caso de Teste** | **CT07 – Validar regras de negócio do agendamento** |
 |:---:|:---:|
 | Requisito Associado | RF-005 |
-| Resultado |  |
-| Registro de evidência | ![Evidência CT07](img/evidencias/ct07-validacoes-agendamento.png) |
+| Resultado | ✅ Aprovado |
+| Registro de evidência | ![Evidência CT07-1](img/evidencias/ct07-validacoes-agendamento-1.png) <br> ![Evidência CT07-2](img/evidencias/ct07-validacoes-agendamento-2.png) <br> ![Evidência CT07-3](img/evidencias/ct07-validacoes-agendamento-3.png) <br> ![Evidência CT07-4](img/evidencias/ct07-validacoes-agendamento-4.png) |
 
 | **Caso de Teste** | **CT08 – Marcar agendamento como realizado** |
 |:---:|:---:|
 | Requisito Associado | RF-007 |
-| Resultado |  |
+| Resultado | ✅ Aprovado |
 | Registro de evidência | ![Evidência CT08](img/evidencias/ct08-concluir-agendamento.png) |
 
 | **Caso de Teste** | **CT09 – Cancelar um agendamento** |
 |:---:|:---:|
 | Requisito Associado | RF-006 |
-| Resultado |  |
+| Resultado | ✅ Aprovado |
 | Registro de evidência | ![Evidência CT09](img/evidencias/ct09-cancelar-agendamento.png) |
 
 | **Caso de Teste** | **CT10 – Visualizar histórico de atendimentos da cliente** |
 |:---:|:---:|
 | Requisito Associado | RF-008 |
-| Resultado |  |
-| Registro de evidência | ![Evidência CT10](img/evidencias/ct10-historico-cliente.png) |
+| Resultado | ✅ Aprovado |
+| Registro de evidência | ![Evidência CT10-1](img/evidencias/ct10-historico-cliente-1.png) <br> ![Evidência CT10-2](img/evidencias/ct10-historico-cliente-2.png) |
 
 | **Caso de Teste** | **CT11 – Filtrar agendamentos por status** |
 |:---:|:---:|
 | Requisito Associado | RF-006 |
-| Resultado |  |
-| Registro de evidência | ![Evidência CT11](img/evidencias/ct11-filtrar-agendamentos.png) |
+| Resultado | ✅ Aprovado |
+| Registro de evidência | ![Evidência CT11-1](img/evidencias/ct11-filtrar-agendamentos-1.png) <br> ![Evidência CT11-2](img/evidencias/ct11-filtrar-agendamentos-2.png) <br> ![Evidência CT11-3](img/evidencias/ct11-filtrar-agendamentos-3.png) <br> ![Evidência CT11-4](img/evidencias/ct11-filtrar-agendamentos-4.png) |
 
 | **Caso de Teste** | **CT12 – Excluir cliente cadastrada** |
 |:---:|:---:|
 | Requisito Associado | RF-003 |
-| Resultado |  |
-| Registro de evidência | ![Evidência CT12](img/evidencias/ct12-excluir-cliente.png) |
+| Resultado | ✅ Aprovado (após correção de defeito — ver observação abaixo) |
+| Registro de evidência | ![Evidência CT12-1](img/evidencias/ct12-excluir-cliente-1.png) <br> ![Evidência CT12-2](img/evidencias/ct12-excluir-cliente-2.png) |
+
+## Relatório de Testes de Software
+
+A execução dos casos de teste validou que as principais funcionalidades do sistema atendem aos requisitos definidos na especificação do projeto. Dos 12 casos de teste planejados, 11 foram aprovados na primeira execução e 1 (CT12) revelou um defeito que foi corrigido e validado posteriormente.
+
+### Defeito identificado e corrigido (CT12)
+
+Durante a execução do **CT12 – Excluir cliente cadastrada**, foi identificado um defeito: ao tentar excluir uma cliente que possuía agendamentos vinculados, o sistema retornava o erro **HTTP 500 (Internal Server Error)** em vez de concluir a operação.
+
+- **Causa:** o relacionamento entre `Agendamento` e `Cliente` estava configurado com a regra de integridade `DeleteBehavior.Restrict`, que impede a exclusão de uma cliente enquanto existirem agendamentos referenciando-a. A exclusão não tratava esse cenário, gerando uma exceção não capturada no servidor.
+- **Correção:** o endpoint de exclusão foi ajustado para remover, na mesma transação, os agendamentos vinculados antes de excluir a cliente (exclusão em cascata controlada pela aplicação). As mensagens de confirmação na interface também foram ajustadas para informar a usuária de que os agendamentos relacionados serão removidos junto.
+- **Validação:** após a correção, o caso de teste CT12 foi reexecutado em ambiente de produção, retornando o resultado esperado (cliente e agendamentos removidos com sucesso, sem erro). Foi ainda adicionado um teste de regressão automatizado (`Excluir_cliente_com_agendamentos_remove_em_cascata`) para evitar a reincidência do defeito.
+
+Este registro demonstra a importância do plano de testes: o defeito foi detectado a partir de um cenário de teste estruturado, corrigido e validado, contribuindo para a qualidade e a robustez da aplicação entregue.
+
+### Conclusão
+
+Todos os 12 casos de teste foram concluídos com resultado **Aprovado**, garantindo que os requisitos funcionais avaliados (RF-001 a RF-013) estão sendo satisfeitos pela aplicação. O ciclo de testes mostrou-se eficaz tanto na verificação das funcionalidades quanto na identificação de defeitos antes da entrega final do produto à empreendedora parceira.
