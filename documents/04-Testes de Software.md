@@ -41,6 +41,66 @@ Como o projeto consiste em um MVP voltado, inicialmente, para uma única usuári
 | **DevTools do navegador** | Inspeção de requisições de rede e console durante a execução dos testes. |
 | **Ferramenta de captura de tela do Windows** | Geração das evidências dos testes executados. |
 
+## Testes de Unidade (Automatizados)
+
+Além dos testes funcionais executados manualmente, o backend da aplicação possui uma suíte de **testes automatizados** que validam o comportamento dos endpoints da API e as regras de negócio. Esses testes são executados a cada alteração no código, garantindo que correções e novas funcionalidades não quebrem o que já funcionava (testes de regressão).
+
+### Ferramentas utilizadas
+
+| Ferramenta | Finalidade |
+|------------|------------|
+| **xUnit** | Framework de testes utilizado para escrever e executar os casos de teste automatizados. |
+| **Microsoft.AspNetCore.Mvc.Testing** (`WebApplicationFactory`) | Sobe a aplicação em memória para testar os endpoints HTTP ponta a ponta. |
+| **Microsoft.EntityFrameworkCore.InMemory** | Banco de dados em memória usado nos testes, isolando-os do PostgreSQL de produção. |
+| **coverlet.collector** | Coleta de cobertura de código durante a execução dos testes. |
+
+### Casos de teste automatizados
+
+| # | Classe / Teste | O que valida |
+|---|----------------|--------------|
+| 1 | `AuthEndpointsTests.Register_devolve_token_e_dados_do_usuario` | Cadastro de usuário retorna token JWT e dados corretos. |
+| 2 | `AuthEndpointsTests.Register_email_duplicado_retorna_409` | Cadastro com e-mail já existente é bloqueado (HTTP 409). |
+| 3 | `AuthEndpointsTests.Login_credenciais_validas_retorna_token` | Login com credenciais válidas retorna token. |
+| 4 | `AuthEndpointsTests.Login_senha_invalida_retorna_401` | Login com senha incorreta é negado (HTTP 401). |
+| 5 | `AuthEndpointsTests.Me_sem_token_retorna_401` | Endpoint protegido sem token retorna HTTP 401. |
+| 6 | `AuthEndpointsTests.Me_com_token_retorna_dados_do_usuario` | Endpoint protegido com token retorna dados do usuário. |
+| 7 | `ClienteEndpointsTests.Lista_sem_token_retorna_401` | Listagem de clientes exige autenticação (HTTP 401). |
+| 8 | `ClienteEndpointsTests.Crud_completo_de_cliente` | Fluxo completo: criar, consultar, atualizar, listar e excluir cliente. |
+| 9 | `ClienteEndpointsTests.Excluir_cliente_com_agendamentos_remove_em_cascata` | Exclusão de cliente com agendamentos remove ambos em cascata (regressão do defeito do CT12). |
+| 10 | `AgendamentoEndpointsTests.Criacao_com_conflito_retorna_409` | Agendamento em horário já ocupado é bloqueado (HTTP 409). |
+| 11 | `AgendamentoEndpointsTests.Cancelar_marca_status_como_cancelado` | Cancelar agendamento altera o status corretamente. |
+| 12 | `AgendamentoEndpointsTests.Concluir_marca_status_como_realizado` | Concluir agendamento altera o status corretamente. |
+| 13 | `AgendamentoEndpointsTests.Historico_por_cliente_retorna_apenas_da_cliente_informada` | Histórico retorna apenas os agendamentos da cliente consultada. |
+| 14 | `AgendamentoEndpointsTests.Update_em_horario_ocupado_retorna_409` | Edição de agendamento para horário ocupado é bloqueada (HTTP 409). |
+
+### Evidência da execução
+
+Os testes são executados com o comando `dotnet test`. O resultado da última execução está abaixo — **14 casos de teste, todos aprovados**:
+
+```
+Aprovado AgendamentoAPI.Tests.AuthEndpointsTests.Register_devolve_token_e_dados_do_usuario
+Aprovado AgendamentoAPI.Tests.AuthEndpointsTests.Register_email_duplicado_retorna_409
+Aprovado AgendamentoAPI.Tests.AuthEndpointsTests.Login_credenciais_validas_retorna_token
+Aprovado AgendamentoAPI.Tests.AuthEndpointsTests.Login_senha_invalida_retorna_401
+Aprovado AgendamentoAPI.Tests.AuthEndpointsTests.Me_sem_token_retorna_401
+Aprovado AgendamentoAPI.Tests.AuthEndpointsTests.Me_com_token_retorna_dados_do_usuario
+Aprovado AgendamentoAPI.Tests.ClienteEndpointsTests.Lista_sem_token_retorna_401
+Aprovado AgendamentoAPI.Tests.ClienteEndpointsTests.Crud_completo_de_cliente
+Aprovado AgendamentoAPI.Tests.ClienteEndpointsTests.Excluir_cliente_com_agendamentos_remove_em_cascata
+Aprovado AgendamentoAPI.Tests.AgendamentoEndpointsTests.Criacao_com_conflito_retorna_409
+Aprovado AgendamentoAPI.Tests.AgendamentoEndpointsTests.Cancelar_marca_status_como_cancelado
+Aprovado AgendamentoAPI.Tests.AgendamentoEndpointsTests.Concluir_marca_status_como_realizado
+Aprovado AgendamentoAPI.Tests.AgendamentoEndpointsTests.Historico_por_cliente_retorna_apenas_da_cliente_informada
+Aprovado AgendamentoAPI.Tests.AgendamentoEndpointsTests.Update_em_horario_ocupado_retorna_409
+
+Total de testes: 14
+     Aprovados: 14
+```
+
+Captura de tela da execução dos testes de unidade:
+
+![Evidência dos Testes de Unidade](img/evidencias/testes-unidade.png)
+
 ## Cenários de Testes
 
 A seguir são apresentados os cenários de teste selecionados. Cada caso de teste relaciona-se diretamente a um ou mais requisitos funcionais definidos na especificação do projeto.

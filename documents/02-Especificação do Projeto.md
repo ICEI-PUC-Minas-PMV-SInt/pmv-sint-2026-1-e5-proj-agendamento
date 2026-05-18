@@ -283,6 +283,13 @@ Figura apresenta a lista de issues do projeto, demonstrando a definição e dist
 Figura apresenta o histórico de commits do projeto no GitHub, evidenciando as contribuições realizadas pelos membros da equipe ao longo do desenvolvimento.
 ![Commits](img/Commits.png)
 <br>
+
+### Status Atual das Contribuições dos Membros do Time
+
+A figura a seguir apresenta o quadro de tarefas atualizado do projeto no GitHub Projects, evidenciando o andamento atual das atividades distribuídas entre os membros da equipe, com as tarefas organizadas nas colunas *Todo*, *In Progress* e *Done*. A maior parte das tarefas já se encontra concluída, refletindo o progresso do desenvolvimento do MVP.
+
+![Status atual das contribuições dos membros do time](img/status-atual-contribuicoes.png)
+<br>
 ## Análise de melhorias do processo
 
 A análise do processo atual de agendamento evidenciou algumas limitações relacionadas à organização e ao controle das informações. Atualmente, a profissional realiza os agendamentos por meio de mensagens no WhatsApp e, ocasionalmente, pelo Instagram, sendo necessário responder manualmente aos clientes, verificar a disponibilidade de horários e registrar os atendimentos de forma não estruturada.
