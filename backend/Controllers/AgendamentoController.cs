@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using AgendamentoAPI.Data;
 using AgendamentoAPI.Models;
+using AgendamentoAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ namespace AgendamentoAPI.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 [Produces("application/json")]
-public class AgendamentoController(AppDbContext db) : ControllerBase
+public class AgendamentoController(AppDbContext db, IEmailService emailService) : ControllerBase
 {
     private int CurrentUserId =>
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -81,6 +82,11 @@ public class AgendamentoController(AppDbContext db) : ControllerBase
         agendamento.CriadoEm = DateTime.UtcNow;
         db.Agendamentos.Add(agendamento);
         await db.SaveChangesAsync();
+
+        await db.Entry(agendamento).Reference(a => a.Cliente).LoadAsync();
+        await db.Entry(agendamento).Reference(a => a.Servico).LoadAsync();
+        _ = emailService.EnviarConfirmacaoAgendamentoAsync(agendamento);
+
         return CreatedAtAction(nameof(GetById), new { id = agendamento.Id }, agendamento);
     }
 
