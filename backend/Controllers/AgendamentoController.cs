@@ -120,6 +120,11 @@ public class AgendamentoController(AppDbContext db, IEmailService emailService) 
         db.Entry(agendamento).State = EntityState.Modified;
         db.Entry(agendamento).Property(a => a.CriadoEm).IsModified = false;
         await db.SaveChangesAsync();
+
+        await db.Entry(agendamento).Reference(a => a.Cliente).LoadAsync();
+        await db.Entry(agendamento).Reference(a => a.Servico).LoadAsync();
+        _ = emailService.EnviarAtualizacaoAgendamentoAsync(agendamento);
+
         return NoContent();
     }
 
@@ -133,6 +138,11 @@ public class AgendamentoController(AppDbContext db, IEmailService emailService) 
         if (agendamento is null) return NotFound();
         agendamento.Status = StatusAgendamento.Cancelado;
         await db.SaveChangesAsync();
+
+        await db.Entry(agendamento).Reference(a => a.Cliente).LoadAsync();
+        await db.Entry(agendamento).Reference(a => a.Servico).LoadAsync();
+        _ = emailService.EnviarCancelamentoAgendamentoAsync(agendamento);
+
         return NoContent();
     }
 
