@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Platform, TouchableOpacity } from 'react-native';
 
+import { FontAwesome } from '@expo/vector-icons';
+
 import { colors } from '../theme/colors';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { api } from '../services/api';
+import { openWhatsApp } from '../utils/whatsapp';
 
 const STATUS_LABEL = ['Agendado', 'Realizado', 'Cancelado'];
 const STATUS_COLOR = ['#2E7D32', '#666', '#D32F2F'];
@@ -138,6 +141,23 @@ export default function AgendamentoDetailScreen({ route, navigation }) {
           )}
         </View>
 
+        {status === 0 && !editing && agendamento.cliente?.telefone ? (
+          <>
+            <TouchableOpacity
+              style={styles.whatsappButton}
+              activeOpacity={0.85}
+              onPress={() => openWhatsApp(
+                agendamento.cliente.telefone,
+                `Olá, ${agendamento.cliente?.nome || ''}! 😊 Passando para lembrar do seu horário na Ivinah Sousa Lash Design: ${agendamento.servico?.nome || 'atendimento'} em ${dataHora}. Qualquer dúvida, é só chamar!`,
+              )}
+            >
+              <FontAwesome name="whatsapp" size={18} color={colors.white} />
+              <Text style={styles.whatsappButtonText}>Enviar lembrete via WhatsApp</Text>
+            </TouchableOpacity>
+            <View style={{ height: 8 }} />
+          </>
+        ) : null}
+
         {status === 0 && !editing && (
           <>
             <Button title="Marcar como realizado" onPress={handleConcluir} />
@@ -171,4 +191,9 @@ const styles = StyleSheet.create({
   label: { fontSize: 12, color: colors.mutedText, fontWeight: 'bold', marginTop: 12, textTransform: 'uppercase' },
   value: { fontSize: 15, color: colors.black, marginTop: 4 },
   statusText: { fontSize: 16, fontWeight: 'bold', marginTop: 4 },
+  whatsappButton: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    backgroundColor: '#25D366', borderRadius: 12, paddingVertical: 14, marginBottom: 8,
+  },
+  whatsappButtonText: { color: colors.white, fontSize: 15, fontWeight: 'bold' },
 });

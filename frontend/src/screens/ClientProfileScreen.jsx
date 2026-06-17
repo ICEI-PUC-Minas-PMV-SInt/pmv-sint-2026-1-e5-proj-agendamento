@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform, ActivityIndicator } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { colors } from '../theme/colors';
@@ -9,6 +9,7 @@ import BottomMenu from '../components/BottomMenu';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { api } from '../services/api';
+import { openWhatsApp } from '../utils/whatsapp';
 
 const STATUS_LABEL = ['Agendado', 'Realizado', 'Cancelado'];
 
@@ -207,6 +208,16 @@ export default function ClientProfileScreen({ route, navigation }) {
               <Text style={styles.clientSince}>{clienteSince}</Text>
               <Text style={styles.clientContact}>{client.telefone || ''}</Text>
               {client.email ? <Text style={styles.clientContact}>{client.email}</Text> : null}
+              {client.telefone ? (
+                <TouchableOpacity
+                  style={styles.whatsappButton}
+                  activeOpacity={0.85}
+                  onPress={() => openWhatsApp(client.telefone, `Olá, ${client.nome}! Aqui é da Ivinah Sousa Lash Design. 😊`)}
+                >
+                  <FontAwesome name="whatsapp" size={18} color={colors.white} />
+                  <Text style={styles.whatsappButtonText}>Conversar no WhatsApp</Text>
+                </TouchableOpacity>
+              ) : null}
             </View>
 
             <View style={styles.statsContainer}>
@@ -340,6 +351,12 @@ const styles = StyleSheet.create({
   clientName: { fontSize: 24, fontFamily: 'BodoniModa_700Bold', color: colors.black, marginBottom: 4 },
   clientSince: { fontSize: 14, color: colors.mutedText, marginBottom: 6 },
   clientContact: { fontSize: 13, color: colors.mutedText },
+  whatsappButton: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    backgroundColor: '#25D366', borderRadius: 24, paddingVertical: 12, paddingHorizontal: 22,
+    marginTop: 16, alignSelf: 'center',
+  },
+  whatsappButtonText: { color: colors.white, fontSize: 14, fontWeight: 'bold' },
   statsContainer: { flexDirection: 'row', gap: 16, marginBottom: 24 },
   statCard: { flex: 1, backgroundColor: colors.white, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#F0EBE6' },
   statIcon: { marginBottom: 12 },
